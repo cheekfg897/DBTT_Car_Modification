@@ -1,0 +1,28 @@
+import type { InventoryItem } from '../types/inventory';
+
+export const MOCK_INVENTORY: InventoryItem[] = [
+  { id: 'INV-001', name: 'Matte Vinyl Wrap (per roll)', category: 'wrap', stock: 4, minStock: 5, unitCost: 280, supplier: '3M Automotive' },
+  { id: 'INV-002', name: 'Gloss Vinyl Wrap (per roll)', category: 'wrap', stock: 8, minStock: 5, unitCost: 250, supplier: '3M Automotive' },
+  { id: 'INV-003', name: 'Satin Vinyl Wrap (per roll)', category: 'wrap', stock: 3, minStock: 4, unitCost: 300, supplier: 'Avery Dennison' },
+  { id: 'INV-004', name: 'Chrome Vinyl Wrap (per roll)', category: 'wrap', stock: 2, minStock: 3, unitCost: 450, supplier: 'Avery Dennison' },
+  { id: 'INV-005', name: 'Carbon Fiber Sheet', category: 'material', stock: 6, minStock: 4, unitCost: 380, supplier: 'Toray Carbon' },
+  { id: 'INV-006', name: 'Window Tint Film - Light', category: 'tint', stock: 12, minStock: 5, unitCost: 45, supplier: 'Llumar' },
+  { id: 'INV-007', name: 'Window Tint Film - Dark', category: 'tint', stock: 2, minStock: 5, unitCost: 50, supplier: 'Llumar' },
+  { id: 'INV-008', name: 'Window Tint Film - Limo', category: 'tint', stock: 7, minStock: 3, unitCost: 55, supplier: 'Llumar' },
+  { id: 'INV-009', name: 'Cat-Back Exhaust Kit (Universal)', category: 'exhaust', stock: 3, minStock: 3, unitCost: 420, supplier: 'Akrapovic' },
+  { id: 'INV-010', name: 'Titanium Exhaust Kit', category: 'exhaust', stock: 1, minStock: 2, unitCost: 1100, supplier: 'Akrapovic' },
+  { id: 'INV-011', name: 'Valved Exhaust System', category: 'exhaust', stock: 2, minStock: 2, unitCost: 1600, supplier: 'Capristo' },
+  { id: 'INV-012', name: 'Ducktail Spoiler (Universal)', category: 'spoiler', stock: 5, minStock: 3, unitCost: 180, supplier: 'Seibon' },
+  { id: 'INV-013', name: 'GT Wing Kit', category: 'spoiler', stock: 2, minStock: 2, unitCost: 550, supplier: 'APR Performance' },
+  { id: 'INV-014', name: 'Swan Neck Wing', category: 'spoiler', stock: 1, minStock: 1, unitCost: 900, supplier: 'APR Performance' },
+  { id: 'INV-015', name: 'Brake Caliper Paint Kit', category: 'paint', stock: 15, minStock: 5, unitCost: 35, supplier: 'G2 Caliper' },
+  { id: 'INV-016', name: 'Clear Coat (per gallon)', category: 'paint', stock: 6, minStock: 4, unitCost: 120, supplier: 'PPG Industries' },
+  { id: 'INV-017', name: 'Primer (per gallon)', category: 'paint', stock: 8, minStock: 4, unitCost: 85, supplier: 'PPG Industries' },
+  { id: 'INV-018', name: 'Street Aero Kit (Supra)', category: 'bodykit', stock: 1, minStock: 1, unitCost: 1200, supplier: 'Varis' },
+  { id: 'INV-019', name: 'Widebody Kit (Universal)', category: 'bodykit', stock: 0, minStock: 1, unitCost: 2500, supplier: 'Liberty Walk' },
+  { id: 'INV-020', name: 'Carbon Aero Package', category: 'bodykit', stock: 1, minStock: 1, unitCost: 4000, supplier: 'Seibon' },
+  { id: 'INV-021', name: 'Vented Hood (Supra)', category: 'hood', stock: 2, minStock: 1, unitCost: 400, supplier: 'Seibon' },
+  { id: 'INV-022', name: 'Carbon Fiber Hood (Universal)', category: 'hood', stock: 1, minStock: 1, unitCost: 900, supplier: 'Seibon' },
+  { id: 'INV-023', name: 'Sport Side Skirts', category: 'sideskirt', stock: 4, minStock: 2, unitCost: 250, supplier: 'Varis' },
+  { id: 'INV-024', name: 'Carbon Side Skirts', category: 'sideskirt', stock: 2, minStock: 1, unitCost: 550, supplier: 'Seibon' },
+];

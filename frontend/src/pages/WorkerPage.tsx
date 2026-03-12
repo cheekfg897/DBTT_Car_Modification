@@ -1,0 +1,14 @@
+import { JobList } from '../components/worker/JobList';
+import { StatusTracker } from '../components/worker/StatusTracker';
+import { PopularCombos } from '../components/worker/PopularCombos';
+
+export function WorkerPage() {
+  return (
+    <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-white">Worker Dashboard</h1>
+      <JobList />
+      <StatusTracker />
+      <PopularCombos />
+    </div>
+  );
+}
