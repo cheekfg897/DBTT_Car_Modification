@@ -15,7 +15,7 @@ const InstagramIcon = () => (
   </svg>
 );
 
-const WHATSAPP = 'https://wa.me/+6588756903';
+const WHATSAPP = 'https://wa.me/+6596123573';
 
 const NAV_LINKS = [
   { label: 'Automotive', href: '#home' },
@@ -110,8 +110,15 @@ export function LandingPage() {
               </a>
             ))}
             <button
+              onClick={() => navigate('/book')}
+              className="ml-4 px-6 py-2.5 text-sm font-semibold border transition-colors"
+              style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
+            >
+              Book Now
+            </button>
+            <button
               onClick={() => navigate('/customize')}
-              className="ml-4 px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white"
+              className="ml-2 px-6 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white"
               style={{ background: GOLD, fontFamily: "'Heebo', sans-serif" }}
             >
               Customize Your Car
@@ -135,6 +142,13 @@ export function LandingPage() {
                 {link.label}
               </a>
             ))}
+            <button
+              onClick={() => { setMenuOpen(false); navigate('/book'); }}
+              className="block w-full text-center px-6 py-2.5 text-sm font-semibold border transition-colors"
+              style={{ borderColor: GOLD, color: GOLD }}
+            >
+              Book Now
+            </button>
             <button
               onClick={() => { setMenuOpen(false); navigate('/customize'); }}
               className="block w-full text-center px-6 py-2.5 text-sm font-semibold text-black hover:bg-white transition-colors"
@@ -179,9 +193,16 @@ export function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('/customize')}
+                onClick={() => navigate('/book')}
                 className="px-8 py-3 text-base font-semibold text-black hover:bg-white transition-colors"
                 style={{ background: GOLD, fontFamily: "'Heebo', sans-serif" }}
+              >
+                Book an Appointment
+              </button>
+              <button
+                onClick={() => navigate('/customize')}
+                className="px-8 py-3 text-base font-semibold border transition-colors"
+                style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
               >
                 Try 3D Customizer
               </button>
@@ -189,8 +210,8 @@ export function LandingPage() {
                 href={WHATSAPP}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-3 text-base font-semibold text-black hover:bg-white transition-colors"
-                style={{ background: GOLD }}
+                className="px-8 py-3 text-base font-semibold border transition-colors"
+                style={{ borderColor: 'white', color: 'white' }}
               >
                 WhatsApp Us
               </a>
