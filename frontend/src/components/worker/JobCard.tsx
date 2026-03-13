@@ -1,5 +1,5 @@
 import type { Booking, BookingStatus } from '../../types/booking';
-import { MOD_OPTIONS } from '../../data/modCatalog';
+import { getMod } from '../../utils/dataLookup';
 import { Clock, Play, CheckCircle, ArrowRight } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
@@ -33,7 +33,7 @@ export function JobCard({ booking }: JobCardProps) {
 
       <div className="flex flex-wrap gap-1 mb-3">
         {booking.mods.map((modId) => {
-          const mod = MOD_OPTIONS.find((m) => m.id === modId);
+          const mod = getMod(modId);
           return (
             <span key={modId} className="px-2 py-0.5 bg-zinc-700/50 rounded text-xs text-zinc-300">
               {mod?.name || modId}

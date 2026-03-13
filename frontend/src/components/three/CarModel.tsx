@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Mesh, MeshStandardMaterial } from 'three';
 import { useStore } from '../../store/useStore';
+import { getFinish } from '../../utils/dataLookup';
 import { FINISH_PRESETS } from '../../data/modCatalog';
 
 export function CarModel() {
@@ -31,7 +32,7 @@ export function CarModel() {
   }, [scene]);
 
   useEffect(() => {
-    const finish = FINISH_PRESETS.find((f) => f.type === customization.finishType) || FINISH_PRESETS[0];
+    const finish = getFinish(customization.finishType) || FINISH_PRESETS[0];
 
     // Body color + finish
     materialMap.get('carpaint')?.forEach((m) => {

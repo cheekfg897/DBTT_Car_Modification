@@ -1,7 +1,6 @@
 import { MOCK_ORDERS } from '../data/mockOrders';
-import { MOD_OPTIONS } from '../data/modCatalog';
-import { COLOR_PRESETS } from '../data/colorPresets';
 import { MOCK_INVENTORY } from '../data/mockInventory';
+import { getMod, getColor } from '../utils/dataLookup';
 import type { Booking } from '../types/booking';
 
 export interface ComboInsight {
@@ -51,8 +50,8 @@ export function getPopularCombos(): ComboInsight[] {
   const combos: ComboInsight[] = [];
   for (const [key, count] of pairCounts) {
     const [a, b] = key.split('|');
-    const modA = MOD_OPTIONS.find((m) => m.id === a);
-    const modB = MOD_OPTIONS.find((m) => m.id === b);
+    const modA = getMod(a);
+    const modB = getMod(b);
     if (modA && modB && count >= 3) {
       const freq = Math.round((count / orders.length) * 100);
       combos.push({
@@ -98,7 +97,7 @@ export function getCategoryBreakdown(): CategoryBreakdown[] {
     categories.set('Caliper Color', (categories.get('Caliper Color') || 0) + 100);
 
     for (const modId of order.mods) {
-      const mod = MOD_OPTIONS.find((m) => m.id === modId);
+      const mod = getMod(modId);
       if (mod) {
         const cat = mod.category.charAt(0).toUpperCase() + mod.category.slice(1);
         categories.set(cat, (categories.get(cat) || 0) + mod.price);
@@ -133,7 +132,7 @@ export function getTrendInsights(): TrendInsight[] {
     const olderCount = olderColorCounts.get(color) || 1;
     const change = Math.round(((recentCount - olderCount) / olderCount) * 100);
     if (Math.abs(change) >= 20) {
-      const preset = COLOR_PRESETS.find((c) => c.hex === color);
+      const preset = getColor(color);
       const name = preset?.name || color;
       insights.push({
         title: `${name} ${change > 0 ? 'Rising' : 'Declining'}`,
@@ -209,7 +208,7 @@ export function getKPIStats() {
   for (const [id, count] of modCounts) {
     if (count > topCount) { topModId = id; topCount = count; }
   }
-  const topService = MOD_OPTIONS.find((m) => m.id === topModId)?.name || 'N/A';
+  const topService = getMod(topModId)?.name || 'N/A';
 
   return { totalRevenue, ordersThisMonth, avgOrderValue, topService };
 }

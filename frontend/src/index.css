@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-orange-accent: #f97316;
-  --color-orange-hover: #ea580c;
+  --color-orange-accent: #f6bd2d;
+  --color-orange-hover: #e0a820;
   --color-surface: #18181b;
   --color-surface-light: #27272a;
   --color-surface-lighter: #3f3f46;
@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Heebo', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

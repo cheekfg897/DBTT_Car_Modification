@@ -1,5 +1,5 @@
 import { MOCK_ORDERS } from '../data/mockOrders';
-import { MOD_OPTIONS, FINISH_PRESETS } from '../data/modCatalog';
+import { getMod, getFinish } from '../utils/dataLookup';
 import type { CarCustomization } from '../types/customization';
 
 export interface Recommendation {
@@ -43,7 +43,7 @@ export function getRecommendations(customization: CarCustomization): Recommendat
     for (const [modId, count] of coOccurrence) {
       const confidence = Math.round((count / matchingOrders) * 100);
       if (confidence >= 25) {
-        const mod = MOD_OPTIONS.find((m) => m.id === modId);
+        const mod = getMod(modId);
         if (mod) {
           recs.push({
             type: 'co-purchase',
@@ -70,7 +70,7 @@ export function getRecommendations(customization: CarCustomization): Recommendat
 
   for (const [modId, count] of trendingMods) {
     if (!customization.selectedMods.includes(modId)) {
-      const mod = MOD_OPTIONS.find((m) => m.id === modId);
+      const mod = getMod(modId);
       if (mod) {
         recs.push({
           type: 'trending',
@@ -86,7 +86,7 @@ export function getRecommendations(customization: CarCustomization): Recommendat
   // 3. Color pairing recommendations
   const pairing = COLOR_PAIRINGS[customization.bodyColor];
   if (pairing) {
-    const finish = FINISH_PRESETS.find((f) => f.type === pairing.finish);
+    const finish = getFinish(pairing.finish);
     if (finish && customization.finishType !== pairing.finish) {
       recs.push({
         type: 'color-pairing',
@@ -98,7 +98,7 @@ export function getRecommendations(customization: CarCustomization): Recommendat
 
     for (const modId of pairing.mods) {
       if (!customization.selectedMods.includes(modId)) {
-        const mod = MOD_OPTIONS.find((m) => m.id === modId);
+        const mod = getMod(modId);
         if (mod) {
           recs.push({
             type: 'color-pairing',
