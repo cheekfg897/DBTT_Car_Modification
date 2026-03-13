@@ -1,5 +1,6 @@
 import { CarScene } from '../components/three/CarScene';
 import { CustomizerPanel } from '../components/customizer/CustomizerPanel';
+import { AIChatbot } from '../components/customizer/AIChatbot';
 
 export function CustomerPage() {
   return (
@@ -8,6 +9,7 @@ export function CustomerPage() {
         <CarScene />
       </div>
       <CustomizerPanel />
+      <AIChatbot />
     </div>
   );
 }
