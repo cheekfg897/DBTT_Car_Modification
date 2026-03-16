@@ -72,6 +72,10 @@ function ApplyBuildCard({ build, onApply }: { build: SuggestedBuild; onApply: ()
   );
 }
 
+const BTN = 56; // button size px
+const PANEL_W = 384;
+const PANEL_H = 560;
+
 export function AIChatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -79,6 +83,50 @@ export function AIChatbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Draggable position (top-left of button)
+  const [pos, setPos] = useState(() => ({
+    x: window.innerWidth - BTN - 24,
+    y: window.innerHeight - BTN - 24,
+  }));
+  const isDragging = useRef(false);
+  const hasMoved = useRef(false);
+  const pointerOrigin = useRef({ x: 0, y: 0 });
+  const posOrigin = useRef({ x: 0, y: 0 });
+
+  function onPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    isDragging.current = true;
+    hasMoved.current = false;
+    pointerOrigin.current = { x: e.clientX, y: e.clientY };
+    posOrigin.current = { ...pos };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!isDragging.current) return;
+    const dx = e.clientX - pointerOrigin.current.x;
+    const dy = e.clientY - pointerOrigin.current.y;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved.current = true;
+    if (!hasMoved.current) return;
+    setPos({
+      x: Math.max(0, Math.min(window.innerWidth - BTN, posOrigin.current.x + dx)),
+      y: Math.max(0, Math.min(window.innerHeight - BTN, posOrigin.current.y + dy)),
+    });
+  }
+
+  function onPointerUp() {
+    if (!hasMoved.current) setOpen((o) => !o);
+    isDragging.current = false;
+  }
+
+  // Position the chat panel so it stays fully on screen
+  const panelLeft = Math.max(8, Math.min(window.innerWidth - PANEL_W - 8, pos.x + BTN - PANEL_W));
+  const spaceAbove = pos.y - 8;
+  const spaceBelow = window.innerHeight - (pos.y + BTN) - 8;
+  const openAbove = spaceAbove >= spaceBelow;
+  const panelTop = openAbove ? pos.y - Math.min(PANEL_H, spaceAbove) - 8 : pos.y + BTN + 8;
+  const panelHeight = openAbove ? Math.min(PANEL_H, spaceAbove) : Math.min(PANEL_H, spaceBelow);
 
   useEffect(() => () => { abortRef.current?.abort(); }, []);
 
@@ -162,21 +210,42 @@ export function AIChatbot() {
 
   return (
     <>
-      {/* Floating button */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center shadow-lg transition-colors"
+      {/* Draggable floating button + label */}
+      <div
+        className="fixed z-60 select-none"
+        style={{ left: pos.x, top: pos.y, width: BTN }}
       >
-        {open ? (
-          <X size={22} className="text-white" />
-        ) : (
-          <MessageCircle size={22} className="text-white" />
+        {/* Label above button — hidden when chat is open */}
+        {!open && (
+          <div
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-semibold text-black shadow-lg pointer-events-none"
+            style={{ background: '#f6bd2d' }}
+          >
+            AI Chat
+          </div>
         )}
-      </button>
+        <button
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          className="w-14 h-14 bg-orange-500 hover:bg-orange-400 rounded-full flex items-center justify-center shadow-lg transition-colors"
+          style={{ cursor: isDragging.current ? 'grabbing' : 'grab' }}
+          title="Drag to move · Click to open"
+        >
+          {open ? (
+            <X size={22} className="text-white" />
+          ) : (
+            <MessageCircle size={22} className="text-white" />
+          )}
+        </button>
+      </div>
 
-      {/* Chat panel */}
+      {/* Chat panel — positioned relative to button */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 h-140 bg-zinc-900 border border-zinc-700 rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+        <div
+          className="fixed z-50 w-96 bg-zinc-900 border border-zinc-700 rounded-2xl flex flex-col shadow-2xl overflow-hidden"
+          style={{ left: panelLeft, top: panelTop, height: panelHeight }}
+        >
           {/* Header */}
           <div className="px-4 py-3 bg-zinc-800 border-b border-zinc-700 flex items-center gap-2">
             <Sparkles size={16} className="text-orange-400" />

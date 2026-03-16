@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Paintbrush, Droplets, CircleDot, Disc3, Layers, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Paintbrush, Droplets, CircleDot, Disc3, Layers, ShieldCheck, ChevronDown, ChevronUp, CalendarCheck } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { ColorPicker } from './ColorPicker';
 import { WrapSelector } from './WrapSelector';
@@ -23,6 +24,7 @@ export function CustomizerPanel() {
   const [activeTab, setActiveTab] = useState<Tab>('respray');
   const [priceOpen, setPriceOpen] = useState(true);
   const { setBodyColor, setRimColor, setCaliperColor, customization } = useStore();
+  const navigate = useNavigate();
 
   return (
     <div className="w-96 bg-zinc-900 border-l border-zinc-800 flex flex-col h-full overflow-hidden">
@@ -100,10 +102,20 @@ export function CustomizerPanel() {
           {priceOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </button>
         {priceOpen && (
-          <div className="px-4 pb-4">
+          <div className="px-4 pb-3">
             <PriceBreakdown />
           </div>
         )}
+        <div className="px-4 pb-4 pt-1">
+          <button
+            onClick={() => navigate('/book', { state: { fromCustomizer: true } })}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-semibold text-black text-sm transition-colors hover:brightness-110"
+            style={{ background: '#f6bd2d' }}
+          >
+            <CalendarCheck size={16} />
+            Schedule Appointment
+          </button>
+        </div>
       </div>
     </div>
   );
