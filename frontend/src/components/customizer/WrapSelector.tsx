@@ -26,7 +26,7 @@ export function WrapSelector() {
                 Roughness: {preset.roughness} | Metalness: {preset.metalness}
               </p>
             </div>
-            <span className="text-sm font-semibold text-orange-accent">${preset.price}</span>
+            <span className="text-sm font-semibold text-orange-accent">SGD {preset.price}</span>
           </button>
         ))}
       </div>

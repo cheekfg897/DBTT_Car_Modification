@@ -48,7 +48,7 @@ export function ModCategoryCard({ category }: ModCategoryCardProps) {
                 <p className="text-xs text-zinc-500 mt-0.5">{mod.description}</p>
               </div>
               <div className="flex items-center gap-2 ml-3">
-                <span className="text-sm font-semibold text-orange-accent">${mod.price.toLocaleString()}</span>
+                <span className="text-sm font-semibold text-orange-accent">SGD {mod.price.toLocaleString()}</span>
                 {isSelected && <Check className="w-4 h-4 text-orange-accent" />}
               </div>
             </button>

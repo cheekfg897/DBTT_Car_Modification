@@ -66,7 +66,7 @@ function buildSystemPrompt(customization: CarCustomization): string {
 
 CURRENT CUSTOMER BUILD:
 - Body Color: ${customization.bodyColor}
-- Finish: ${currentFinish?.name || customization.finishType} ($${currentFinish?.price || 0})
+- Finish: ${currentFinish?.name || customization.finishType} (SGD ${currentFinish?.price || 0})
 - Window Tint: ${Math.round(customization.windowTint * 100)}% opacity
 - Rim Color: ${customization.rimColor}
 - Caliper Color: ${customization.caliperColor}
@@ -76,7 +76,7 @@ AVAILABLE COLORS (use exact hex codes):
 ${COLOR_PRESETS.map((c) => `- ${c.name}: ${c.hex} (${c.category})`).join('\n')}
 
 AVAILABLE MODIFICATIONS (use exact IDs):
-${MOD_OPTIONS.map((m) => `- ID: "${m.id}" | ${m.name} ($${m.price.toLocaleString()}): ${m.description}`).join('\n')}
+${MOD_OPTIONS.map((m) => `- ID: "${m.id}" | ${m.name} (SGD ${m.price.toLocaleString()}): ${m.description}`).join('\n')}
 
 AVAILABLE FINISHES: gloss, matte, satin, chrome, carbon
 

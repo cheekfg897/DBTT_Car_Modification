@@ -1,6 +1,5 @@
 import { JobList } from '../components/worker/JobList';
 import { StatusTracker } from '../components/worker/StatusTracker';
-import { PopularCombos } from '../components/worker/PopularCombos';
 
 export function WorkerPage() {
   return (
@@ -8,7 +7,6 @@ export function WorkerPage() {
       <h1 className="text-2xl font-bold text-white tracking-wide" style={{ fontFamily: "'Russo One', sans-serif" }}>Worker Dashboard</h1>
       <JobList />
       <StatusTracker />
-      <PopularCombos />
     </div>
   );
 }

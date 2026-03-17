@@ -1,10 +1,21 @@
-import { useStore } from '../../store/useStore';
-import { getSupplyAlerts } from '../../engine/analyticsEngine';
+import { useState, useEffect } from 'react';
 import { AlertTriangle, XCircle } from 'lucide-react';
 
+interface SupplyAlert {
+  itemName:  string;
+  stock:     number;
+  minStock:  number;
+  severity:  'warning' | 'critical';
+}
+
 export function SupplyAlerts() {
-  const bookings = useStore((s) => s.bookings);
-  const alerts = getSupplyAlerts(bookings);
+  const [alerts, setAlerts] = useState<SupplyAlert[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/supply-alerts')
+      .then((r) => r.json())
+      .then(setAlerts);
+  }, []);
 
   return (
     <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
@@ -38,8 +49,12 @@ export function SupplyAlerts() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white">{alert.itemName}</p>
                 <p className="text-xs text-zinc-500">
-                  Stock: <span className={alert.severity === 'critical' ? 'text-red-400' : 'text-yellow-500'}>{alert.stock}</span>
-                  {' / Min: '}{alert.minStock}
+                  Stock:{' '}
+                  <span className={alert.severity === 'critical' ? 'text-red-400' : 'text-yellow-500'}>
+                    {alert.stock}
+                  </span>
+                  {' / Min: '}
+                  {alert.minStock}
                 </p>
               </div>
               <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase ${

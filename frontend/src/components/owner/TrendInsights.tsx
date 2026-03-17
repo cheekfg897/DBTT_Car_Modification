@@ -1,8 +1,21 @@
-import { getTrendInsights } from '../../engine/analyticsEngine';
+import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Lightbulb } from 'lucide-react';
 
+interface TrendInsight {
+  title:       string;
+  description: string;
+  change:      number;
+  type:        'up' | 'down';
+}
+
 export function TrendInsights() {
-  const insights = getTrendInsights();
+  const [insights, setInsights] = useState<TrendInsight[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/trend-insights')
+      .then((r) => r.json())
+      .then(setInsights);
+  }, []);
 
   return (
     <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-5">

@@ -45,7 +45,7 @@ export function JobCard({ booking }: JobCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-xs text-zinc-500">
           <span>{booking.date}</span>
-          <span className="font-semibold text-orange-accent">${booking.totalPrice.toLocaleString()}</span>
+          <span className="font-semibold text-orange-accent">SGD {booking.totalPrice.toLocaleString()}</span>
         </div>
 
         {booking.status !== 'done' && (

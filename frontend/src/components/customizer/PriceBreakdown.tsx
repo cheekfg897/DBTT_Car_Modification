@@ -31,7 +31,7 @@ export function PriceBreakdown() {
         {baseItems.map((item, i) => (
           <div key={i} className="flex justify-between text-sm">
             <span className="text-zinc-400">{item.label}</span>
-            <span className="text-zinc-300">${item.price.toLocaleString()}</span>
+            <span className="text-zinc-300">SGD {item.price.toLocaleString()}</span>
           </div>
         ))}
         {selectedMods.map((mod) => (
@@ -46,13 +46,13 @@ export function PriceBreakdown() {
               </button>
               <span className="text-zinc-400">{mod.name}</span>
             </div>
-            <span className="text-zinc-300">${mod.price.toLocaleString()}</span>
+            <span className="text-zinc-300">SGD {mod.price.toLocaleString()}</span>
           </div>
         ))}
       </div>
       <div className="border-t border-zinc-700 mt-3 pt-3 flex justify-between">
         <span className="text-sm font-bold text-white">Total</span>
-        <span className="text-lg font-bold text-orange-accent">${total.toLocaleString()}</span>
+        <span className="text-lg font-bold text-orange-accent">SGD {total.toLocaleString()}</span>
       </div>
     </div>
   );

@@ -7,7 +7,6 @@ import { WrapSelector } from './WrapSelector';
 import { WindowTintSlider } from './WindowTintSlider';
 import { ModCategoryCard } from './ModCategoryCard';
 import { PriceBreakdown } from './PriceBreakdown';
-import { RecommendationsSidebar } from './RecommendationsSidebar';
 
 const tabs = [
   { id: 'respray', label: 'Respray', icon: Paintbrush },
@@ -89,7 +88,6 @@ export function CustomizerPanel() {
           </div>
         )}
 
-        <RecommendationsSidebar />
       </div>
 
       {/* Price breakdown - collapsible at bottom */}
