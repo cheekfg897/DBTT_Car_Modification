@@ -244,7 +244,7 @@ export function BookingPage() {
       {/* Header */}
       <header className="bg-black border-b border-zinc-800 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
-          <button onClick={() => navigate('/')} className="text-zinc-400 hover:text-white transition-colors">
+          <button onClick={() => navigate('/customize')} className="text-zinc-400 hover:text-white transition-colors">
             <ArrowLeft size={20} />
           </button>
           <img src="https://vos.sg/wp-content/uploads/2025/06/Vos-Logo-Facelift-3.png" alt="VOS" className="h-8 w-auto" />
@@ -286,17 +286,17 @@ export function BookingPage() {
         </div>
       )}
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-5xl mx-auto px-6 py-4">
 
         {/* ── STEP 1: Services ── */}
         {step === 1 && (
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Select Services</h2>
-            <p className="text-zinc-400 mb-6">Choose one or more services. Select all that apply.</p>
+            <h2 className="text-2xl font-bold text-white mb-1">Select Services</h2>
+            <p className="text-zinc-400 mb-3">Choose one or more services. Select all that apply.</p>
 
             {/* Saved design banner */}
             {fromCustomizer && (
-              <div className="mb-8 p-4 rounded-xl border flex items-start gap-4" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.07)' }}>
+              <div className="mb-4 p-3 rounded-xl border flex items-start gap-4" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.07)' }}>
                 <div className="w-8 h-8 rounded-full shrink-0 border-2 mt-0.5" style={{ background: savedCustomization.bodyColor, borderColor: GOLD }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-semibold text-sm mb-0.5">Design from 3D Customizer attached</p>
@@ -309,14 +309,14 @@ export function BookingPage() {
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
               {SERVICES.map((s) => {
                 const selected = form.services.includes(s.id);
                 return (
                   <button
                     key={s.id}
                     onClick={() => toggleService(s.id)}
-                    className="relative text-left p-5 rounded-xl border transition-all"
+                    className="relative text-left p-3 rounded-xl border transition-all"
                     style={selected
                       ? { borderColor: GOLD, background: 'rgba(246,189,45,0.08)' }
                       : { borderColor: '#27272a', background: '#18181b' }}
@@ -326,8 +326,8 @@ export function BookingPage() {
                         <Check size={12} color="#000" />
                       </div>
                     )}
-                    <p className="text-white font-semibold mb-1">{s.name}</p>
-                    <p className="text-zinc-400 text-sm mb-3">{s.desc}</p>
+                    <p className="text-white font-semibold mb-0.5">{s.name}</p>
+                    <p className="text-zinc-400 text-sm mb-2">{s.desc}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-zinc-500">{s.duration}</span>
                       <span className="text-xs font-semibold" style={{ color: GOLD }}>{s.price}</span>

@@ -118,29 +118,29 @@ def get_projections() -> dict:
 
 def _generate_transactions() -> pd.DataFrame:
     """Reproduce the synthetic transaction dataset from notebook section 9."""
-    services         = ["Car Wrap", "Paint Protection Film", "Solar Film Tinting", "Spray", "Graphic Design", "Bodykit"]
+    services         = ["Widebody Kit", "Cat-Back Exhaust", "Ducktail Spoiler", "Sport Side Skirts", "Carbon Fiber Hood", "GT Wing"]
     car_segments     = ["sedan", "hatchback", "SUV", "luxury"]
     seg_probs        = np.array([0.38, 0.20, 0.30, 0.12])
     style_prefs      = ["sporty", "premium", "minimalist", "family"]
     style_probs      = np.array([0.30, 0.22, 0.23, 0.25])
 
     svc_weights = {
-        "sporty":    {"Car Wrap": 0.30, "Paint Protection Film": 0.18, "Solar Film Tinting": 0.14, "Spray": 0.16, "Graphic Design": 0.07, "Bodykit": 0.15},
-        "premium":   {"Car Wrap": 0.17, "Paint Protection Film": 0.30, "Solar Film Tinting": 0.20, "Spray": 0.10, "Graphic Design": 0.05, "Bodykit": 0.18},
-        "minimalist":{"Car Wrap": 0.14, "Paint Protection Film": 0.25, "Solar Film Tinting": 0.30, "Spray": 0.10, "Graphic Design": 0.12, "Bodykit": 0.09},
-        "family":    {"Car Wrap": 0.18, "Paint Protection Film": 0.27, "Solar Film Tinting": 0.28, "Spray": 0.11, "Graphic Design": 0.06, "Bodykit": 0.10},
+        "sporty":    {"Widebody Kit": 0.25, "Cat-Back Exhaust": 0.22, "Ducktail Spoiler": 0.18, "Sport Side Skirts": 0.15, "Carbon Fiber Hood": 0.10, "GT Wing": 0.10},
+        "premium":   {"Widebody Kit": 0.20, "Cat-Back Exhaust": 0.10, "Ducktail Spoiler": 0.15, "Sport Side Skirts": 0.12, "Carbon Fiber Hood": 0.28, "GT Wing": 0.15},
+        "minimalist":{"Widebody Kit": 0.10, "Cat-Back Exhaust": 0.18, "Ducktail Spoiler": 0.30, "Sport Side Skirts": 0.22, "Carbon Fiber Hood": 0.12, "GT Wing": 0.08},
+        "family":    {"Widebody Kit": 0.12, "Cat-Back Exhaust": 0.20, "Ducktail Spoiler": 0.25, "Sport Side Skirts": 0.25, "Carbon Fiber Hood": 0.10, "GT Wing": 0.08},
     }
 
     secondary_map = {
-        "Car Wrap":            (["Solar Film Tinting", "Paint Protection Film", "Graphic Design", "Bodykit"],   [0.40, 0.30, 0.20, 0.10]),
-        "Paint Protection Film":(["Solar Film Tinting", "Car Wrap", "Bodykit"],                                 [0.50, 0.35, 0.15]),
-        "Solar Film Tinting":  (["Paint Protection Film", "Car Wrap", "Graphic Design"],                        [0.45, 0.40, 0.15]),
-        "Spray":               (["Bodykit", "Car Wrap", "Graphic Design"],                                      [0.45, 0.35, 0.20]),
-        "Graphic Design":      (["Car Wrap", "Spray", "Solar Film Tinting"],                                    [0.50, 0.30, 0.20]),
-        "Bodykit":             (["Spray", "Car Wrap", "Paint Protection Film"],                                 [0.45, 0.35, 0.20]),
+        "Widebody Kit":     (["Sport Side Skirts", "Cat-Back Exhaust", "GT Wing", "Carbon Fiber Hood"], [0.35, 0.30, 0.20, 0.15]),
+        "Cat-Back Exhaust": (["Widebody Kit", "Sport Side Skirts", "Ducktail Spoiler"],                 [0.40, 0.35, 0.25]),
+        "Ducktail Spoiler": (["Cat-Back Exhaust", "Sport Side Skirts", "Carbon Fiber Hood"],            [0.40, 0.35, 0.25]),
+        "Sport Side Skirts":(["Widebody Kit", "Cat-Back Exhaust", "Ducktail Spoiler"],                  [0.40, 0.35, 0.25]),
+        "Carbon Fiber Hood":(["Widebody Kit", "GT Wing", "Cat-Back Exhaust"],                           [0.45, 0.30, 0.25]),
+        "GT Wing":          (["Widebody Kit", "Carbon Fiber Hood", "Cat-Back Exhaust"],                 [0.45, 0.30, 0.25]),
     }
 
-    base_price = {"Car Wrap": 1800, "Paint Protection Film": 2200, "Solar Film Tinting": 900, "Spray": 1300, "Graphic Design": 700, "Bodykit": 2500}
+    base_price = {"Widebody Kit": 5000, "Cat-Back Exhaust": 800, "Ducktail Spoiler": 450, "Sport Side Skirts": 600, "Carbon Fiber Hood": 2000, "GT Wing": 1200}
     seg_mult   = {"sedan": 1.00, "hatchback": 0.92, "SUV": 1.10, "luxury": 1.25}
     style_mult = {"sporty": 1.06, "premium": 1.10, "minimalist": 0.97, "family": 1.00}
 
@@ -252,7 +252,7 @@ def get_service_stats() -> dict:
 def get_recommendations() -> list:
     """Section 10: association rule mining on synthetic transactions."""
     df       = _get_transactions()
-    services = ["Car Wrap", "Paint Protection Film", "Solar Film Tinting", "Spray", "Graphic Design", "Bodykit"]
+    services = ["Widebody Kit", "Cat-Back Exhaust", "Ducktail Spoiler", "Sport Side Skirts", "Carbon Fiber Hood", "GT Wing"]
 
     order_sets = df.apply(
         lambda r: {r["primary_service"]} | ({r["secondary_service"]} if r["secondary_service"] else set()),

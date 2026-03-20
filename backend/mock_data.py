@@ -70,44 +70,44 @@ def get_service_breakdown() -> list[dict]:
 
 def get_trend_insights() -> list[dict]:
     """
-    Color and finish trend insights (ported from frontend analyticsEngine logic).
-    Compares recent vs earlier months using synthetic order distribution data.
+    Modification and finish trend insights based on synthetic order distribution data.
+    All items correspond to mods/finishes available in the 3D customizer.
     """
     return [
         {
+            "title":       "Widebody Kit Surging",
+            "description": "Widebody Kit bookings up 41% — customers going for aggressive stance builds",
+            "change":      41,
+            "type":        "up",
+        },
+        {
+            "title":       "Ducktail Spoiler Rising",
+            "description": "Ducktail Spoiler orders up 33% as clean street builds gain popularity",
+            "change":      33,
+            "type":        "up",
+        },
+        {
             "title":       "Matte Finish Trending Up",
-            "description": "Matte finish orders increased by 28% in recent months",
+            "description": "Matte finish orders up 28% — increasingly paired with dark body colours",
             "change":      28,
             "type":        "up",
         },
         {
-            "title":       "Satin Finish Trending Up",
-            "description": "Satin finish orders increased by 31% in recent months",
-            "change":      31,
+            "title":       "Valved Exhaust Growing",
+            "description": "Valved Exhaust bookings up 24% driven by demand for switchable sound profiles",
+            "change":      24,
+            "type":        "up",
+        },
+        {
+            "title":       "Carbon Fiber Hood Climbing",
+            "description": "Carbon Fiber Hood orders up 19% as weight-reduction builds trend upward",
+            "change":      19,
             "type":        "up",
         },
         {
             "title":       "Chrome Finish Cooling Off",
-            "description": "Chrome finish orders decreased by 35% compared to earlier months",
+            "description": "Chrome finish bookings down 35% as matte and satin styles take over",
             "change":      -35,
-            "type":        "down",
-        },
-        {
-            "title":       "Midnight Black Rising",
-            "description": "Midnight Black requests up 22% compared to earlier months",
-            "change":      22,
-            "type":        "up",
-        },
-        {
-            "title":       "Arctic White Declining",
-            "description": "Arctic White requests down 20% compared to earlier months",
-            "change":      -20,
-            "type":        "down",
-        },
-        {
-            "title":       "Racing Red Declining",
-            "description": "Racing Red requests down 25% compared to earlier months",
-            "change":      -25,
             "type":        "down",
         },
     ]

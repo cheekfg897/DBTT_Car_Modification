@@ -1,4 +1,3 @@
-import { getPopularCombos } from './analyticsEngine';
 import { getRecommendations } from './recommendationEngine';
 import { MOD_OPTIONS } from '../data/modCatalog';
 import { COLOR_PRESETS } from '../data/colorPresets';
@@ -55,8 +54,12 @@ const SUGGEST_BUILD_TOOL = {
   },
 };
 
-function buildSystemPrompt(customization: CarCustomization): string {
-  const combos = getPopularCombos();
+export interface ServiceBundle {
+  bundle: string;
+  count: number;
+}
+
+function buildSystemPrompt(customization: CarCustomization, combos: ServiceBundle[]): string {
   const recs = getRecommendations(customization);
 
   const selectedModNames = customization.selectedMods.map((id) => getMod(id)?.name).filter(Boolean);
@@ -80,14 +83,16 @@ ${MOD_OPTIONS.map((m) => `- ID: "${m.id}" | ${m.name} (SGD ${m.price.toLocaleStr
 
 AVAILABLE FINISHES: gloss, matte, satin, chrome, carbon
 
-POPULAR COMBOS:
-${combos.map((c) => `- ${c.label}`).join('\n')}
+POPULAR SERVICE BOOKING COMBOS (for context only — these are workshop services customers frequently book together, NOT all of them are 3D-visualisable mods):
+${combos.map((c) => `- ${c.bundle} (booked together ${c.count} times)`).join('\n')}
 
 PERSONALIZED RECOMMENDATIONS:
 ${recs.map((r) => `- ${r.title}: ${r.description}`).join('\n')}
 
 Guidelines:
 - When a customer describes a style (e.g. "aggressive", "clean and minimal", "JDM", "luxury", "stealthy"), call the suggest_build function with a tailored build
+- Only include items from AVAILABLE MODIFICATIONS, AVAILABLE COLORS, and AVAILABLE FINISHES in a suggested build — never reference services from the booking combos list as mods
+- If asked about a service that isn't in the AVAILABLE MODIFICATIONS list (e.g. Paint Protection Film, Solar Film Tinting), explain it's a bookable workshop service but cannot be previewed on the 3D model
 - Always use exact mod IDs and hex codes from the lists above
 - Keep text responses concise (under 120 words)
 - After the build is suggested, briefly describe the vibe in your text response`;
@@ -96,6 +101,7 @@ Guidelines:
 export async function streamChat(
   messages: { role: 'user' | 'assistant'; content: string }[],
   customization: CarCustomization,
+  combos: ServiceBundle[],
   onChunk: (text: string) => void,
   onDone: () => void,
   onSuggestedBuild: (build: SuggestedBuild) => void,
@@ -111,12 +117,12 @@ export async function streamChat(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       stream: true,
       tools: [SUGGEST_BUILD_TOOL],
       tool_choice: 'auto',
       messages: [
-        { role: 'system', content: buildSystemPrompt(customization) },
+        { role: 'system', content: buildSystemPrompt(customization, combos) },
         ...messages,
       ],
     }),
