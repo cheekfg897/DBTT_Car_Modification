@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { CarCustomization, FinishType } from '../types/customization';
 import type { Booking, BookingStatus, AppointmentBooking } from '../types/booking';
 import { DEFAULT_CUSTOMIZATION } from '../types/customization';
-import { INITIAL_BOOKINGS } from '../data/mockBookings';
+import { INITIAL_BOOKINGS, INITIAL_APPOINTMENTS } from '../data/mockBookings';
 
 export type Role = 'customer' | 'worker' | 'owner';
 
@@ -29,6 +29,7 @@ interface AppState {
   // Appointments (customer-facing booking calendar)
   appointments: AppointmentBooking[];
   addAppointment: (appointment: AppointmentBooking) => void;
+  updateAppointmentStatus: (id: string, status: AppointmentBooking['status']) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -71,12 +72,16 @@ export const useStore = create<AppState>()(
           }),
         })),
 
-      appointments: [],
+      appointments: INITIAL_APPOINTMENTS,
       addAppointment: (appointment) =>
         set((state) => ({ appointments: [...state.appointments, appointment] })),
+      updateAppointmentStatus: (id, status) =>
+        set((state) => ({
+          appointments: state.appointments.map((a) => a.id === id ? { ...a, status } : a),
+        })),
     }),
     {
-      name: 'los-santos-customs-storage',
+      name: 'los-santos-customs-storage-v2',
       partialize: (state) => ({
         customization: state.customization,
         bookings: state.bookings,

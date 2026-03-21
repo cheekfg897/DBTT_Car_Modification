@@ -17,7 +17,7 @@ export interface AppointmentBooking {
   logistics: LogisticsType;
   pickupAddress?: string;
   pickupTimePreference?: 'morning' | 'afternoon';
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: 'pending' | 'in-progress' | 'done' | 'cancelled';
   notes?: string;
   savedDesign?: CarCustomization;
   createdAt: string;
