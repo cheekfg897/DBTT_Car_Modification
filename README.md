@@ -60,11 +60,17 @@ cd backend
 # 2. (Recommended) Create and activate a virtual environment
 python -m venv venv
 
-# On Windows:
-venv\Scripts\activate
+# On Windows (Git Bash) — use this:
+source venv/Scripts/activate
+
+# On Windows (Command Prompt):
+# venv\Scripts\activate.bat
+
+# On Windows (PowerShell):
+# venv\Scripts\Activate.ps1
 
 # On macOS/Linux:
-source venv/bin/activate
+# source venv/bin/activate
 
 # 3. Install Python dependencies
 pip install -r requirements.txt
