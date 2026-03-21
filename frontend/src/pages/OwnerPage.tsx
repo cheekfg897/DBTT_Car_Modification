@@ -1,4 +1,5 @@
 import { DashboardStats }       from '../components/owner/DashboardStats';
+import { LiveBookingsKPIs }    from '../components/owner/LiveBookingsKPIs';
 import { UpliftKPIs }           from '../components/owner/UpliftKPIs';
 import { ProjectionChart }      from '../components/owner/ProjectionChart';
 import { RevenueChart }         from '../components/owner/RevenueChart';
@@ -20,6 +21,9 @@ export function OwnerPage() {
 
       {/* Operational KPIs */}
       <DashboardStats />
+
+      {/* Live bookings from the booking system */}
+      <LiveBookingsKPIs />
 
       {/* Digital transformation projection KPIs */}
       <UpliftKPIs />

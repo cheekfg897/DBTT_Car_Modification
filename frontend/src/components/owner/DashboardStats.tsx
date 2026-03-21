@@ -28,7 +28,7 @@ export function DashboardStats() {
   }
 
   const cards = [
-    { label: 'Total Revenue (2025)',  value: `SGD ${stats.totalRevenue.toLocaleString()}`,    icon: DollarSign,  color: 'text-green-400' },
+    { label: 'Projected Revenue (2025)',  value: `SGD ${stats.totalRevenue.toLocaleString()}`,    icon: DollarSign,  color: 'text-green-400' },
     { label: 'Orders This Month',     value: stats.ordersThisMonth.toString(),                 icon: ShoppingCart, color: 'text-blue-400' },
     { label: 'Avg Order Value',       value: `SGD ${stats.avgOrderValue.toLocaleString()}`,    icon: TrendingUp,  color: 'text-purple-400' },
     { label: 'Top Service',           value: stats.topService,                                 icon: Award,       color: 'text-orange-accent' },
