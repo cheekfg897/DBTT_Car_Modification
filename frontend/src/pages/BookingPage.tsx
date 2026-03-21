@@ -38,9 +38,9 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'];
 
-const STEP_LABELS = ['Services', 'Date', 'Time', 'Logistics', 'Details', 'Confirm'];
+const STEP_LABELS = ['Services', 'Date & Time', 'Logistics', 'Details', 'Confirm'];
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 interface FormData {
   services: string[];
@@ -132,10 +132,9 @@ export function BookingPage() {
   const canProceed = () => {
     switch (step) {
       case 1: return form.services.length > 0;
-      case 2: return !!form.date;
-      case 3: return !!form.time;
-      case 4: return form.logistics === 'self-drive' || !!form.pickupAddress.trim();
-      case 5: return !!form.customerName.trim() && !!form.email.trim() && !!form.phone.trim() && !!form.carModel.trim() && !!form.carPlate.trim();
+      case 2: return !!form.date && !!form.time;
+      case 3: return form.logistics === 'self-drive' || !!form.pickupAddress.trim();
+      case 4: return !!form.customerName.trim() && !!form.email.trim() && !!form.phone.trim() && !!form.carModel.trim() && !!form.carPlate.trim();
       default: return true;
     }
   };
@@ -160,7 +159,7 @@ export function BookingPage() {
       createdAt: new Date().toISOString(),
     };
     addAppointment(appointment);
-    setStep(6);
+    setStep(5);
   };
 
   const prevMonth = () =>
@@ -254,7 +253,7 @@ export function BookingPage() {
       </header>
 
       {/* Progress stepper */}
-      {step < 6 && (
+      {step < 5 && (
         <div className="bg-zinc-900 border-b border-zinc-800">
           <div className="max-w-5xl mx-auto px-6 py-4">
             <div className="flex items-center">
@@ -291,136 +290,175 @@ export function BookingPage() {
         {/* ── STEP 1: Services ── */}
         {step === 1 && (
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">Select Services</h2>
-            <p className="text-zinc-400 mb-3">Choose one or more services. Select all that apply.</p>
+            {fromCustomizer ? (
+              <>
+                <h2 className="text-2xl font-bold text-white mb-1">Your Services Summary</h2>
+                <p className="text-zinc-400 mb-4">These services have been automatically selected based on your 3D customisation.</p>
 
-            {/* Saved design banner */}
-            {fromCustomizer && (
-              <div className="mb-4 p-3 rounded-xl border flex items-start gap-4" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.07)' }}>
-                <div className="w-8 h-8 rounded-full shrink-0 border-2 mt-0.5" style={{ background: savedCustomization.bodyColor, borderColor: GOLD }} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm mb-0.5">Design from 3D Customizer attached</p>
-                  <p className="text-zinc-400 text-xs">
-                    {savedCustomization.finishType.charAt(0).toUpperCase() + savedCustomization.finishType.slice(1)} finish
-                    {savedCustomization.windowTint > 0 ? ` · ${Math.round(savedCustomization.windowTint * 100)}% window tint` : ''}
-                    {savedCustomization.selectedMods.length > 0 ? ` · ${savedCustomization.selectedMods.length} mod${savedCustomization.selectedMods.length > 1 ? 's' : ''}` : ''}
-                  </p>
-                  <p className="text-xs mt-1.5" style={{ color: GOLD }}>Services below have been pre-selected based on your design. Adjust as needed.</p>
+                {/* Design banner */}
+                <div className="mb-5 p-4 rounded-xl border flex items-start gap-4" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.07)' }}>
+                  <div className="w-9 h-9 rounded-full shrink-0 border-2 mt-0.5" style={{ background: savedCustomization.bodyColor, borderColor: GOLD }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold text-sm mb-0.5">Design from 3D Customizer</p>
+                    <p className="text-zinc-400 text-xs">
+                      {savedCustomization.finishType.charAt(0).toUpperCase() + savedCustomization.finishType.slice(1)} finish
+                      {savedCustomization.windowTint > 0 ? ` · ${Math.round(savedCustomization.windowTint * 100)}% window tint` : ''}
+                      {savedCustomization.selectedMods.length > 0 ? ` · ${savedCustomization.selectedMods.length} mod${savedCustomization.selectedMods.length > 1 ? 's' : ''}` : ''}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-              {SERVICES.map((s) => {
-                const selected = form.services.includes(s.id);
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => toggleService(s.id)}
-                    className="relative text-left p-3 rounded-xl border transition-all"
-                    style={selected
-                      ? { borderColor: GOLD, background: 'rgba(246,189,45,0.08)' }
-                      : { borderColor: '#27272a', background: '#18181b' }}
-                  >
-                    {selected && (
-                      <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: GOLD }}>
-                        <Check size={12} color="#000" />
+
+                {/* Receipt-style service list */}
+                <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden mb-6">
+                  {form.services.map((id, idx) => {
+                    const s = SERVICES.find((svc) => svc.id === id);
+                    if (!s) return null;
+                    return (
+                      <div
+                        key={s.id}
+                        className={`flex items-center justify-between gap-4 px-5 py-4 ${idx < form.services.length - 1 ? 'border-b border-zinc-800' : ''}`}
+                      >
+                        <div className="min-w-0">
+                          <p className="text-white font-medium text-sm">{s.name}</p>
+                          <p className="text-zinc-500 text-xs mt-0.5">{s.duration}</p>
+                        </div>
+                        <span className="text-sm font-semibold shrink-0" style={{ color: GOLD }}>{s.price}</span>
                       </div>
-                    )}
-                    <p className="text-white font-semibold mb-0.5">{s.name}</p>
-                    <p className="text-zinc-400 text-sm mb-2">{s.desc}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-500">{s.duration}</span>
-                      <span className="text-xs font-semibold" style={{ color: GOLD }}>{s.price}</span>
-                    </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <button
+                    onClick={() => navigate('/customize')}
+                    className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm"
+                  >
+                    Back to Customisation
                   </button>
-                );
-              })}
-            </div>
-            <div className="flex justify-end">
-              <button
-                disabled={!canProceed()}
-                onClick={() => setStep(2)}
-                className="px-8 py-3 font-semibold text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white"
-                style={{ background: GOLD }}
-              >
-                Continue — Pick a Date
-              </button>
-            </div>
+                  <button
+                    onClick={() => setStep(2)}
+                    className="px-8 py-3 font-semibold text-black transition-colors hover:bg-white"
+                    style={{ background: GOLD }}
+                  >
+                    Continue — Pick a Date &amp; Time
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-white mb-1">Select Services</h2>
+                <p className="text-zinc-400 mb-3">Choose one or more services. Select all that apply.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                  {SERVICES.map((s) => {
+                    const selected = form.services.includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => toggleService(s.id)}
+                        className="relative text-left p-3 rounded-xl border transition-all"
+                        style={selected
+                          ? { borderColor: GOLD, background: 'rgba(246,189,45,0.08)' }
+                          : { borderColor: '#27272a', background: '#18181b' }}
+                      >
+                        {selected && (
+                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: GOLD }}>
+                            <Check size={12} color="#000" />
+                          </div>
+                        )}
+                        <p className="text-white font-semibold mb-0.5">{s.name}</p>
+                        <p className="text-zinc-400 text-sm mb-2">{s.desc}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-zinc-500">{s.duration}</span>
+                          <span className="text-xs font-semibold" style={{ color: GOLD }}>{s.price}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    disabled={!canProceed()}
+                    onClick={() => setStep(2)}
+                    className="px-8 py-3 font-semibold text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white"
+                    style={{ background: GOLD }}
+                  >
+                    Continue — Pick a Date &amp; Time
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
-        {/* ── STEP 2: Date ── */}
+        {/* ── STEP 2: Date & Time ── */}
         {step === 2 && (
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Choose a Date</h2>
-            <p className="text-zinc-400 mb-8">We're open Monday–Saturday, 9am–6pm. Sundays are closed.</p>
-            <div className="max-w-sm bg-zinc-900 rounded-xl border border-zinc-800 p-6">
-              {renderCalendar()}
-            </div>
-            {form.date && (
-              <div className="mt-4 p-4 rounded-xl border max-w-sm" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.06)' }}>
-                <div className="flex items-center gap-2">
-                  <Calendar size={15} style={{ color: GOLD }} />
-                  <span className="text-white font-medium text-sm">
-                    {new Date(form.date + 'T00:00:00').toLocaleDateString('en-SG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </span>
+            <h2 className="text-2xl font-bold text-white mb-2">Choose Date &amp; Time</h2>
+            <p className="text-zinc-400 mb-6">We're open Monday–Saturday, 9am–6pm. Sundays are closed.</p>
+
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
+              {/* Calendar */}
+              <div className="w-full lg:w-auto shrink-0">
+                <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 lg:w-80">
+                  {renderCalendar()}
                 </div>
-                <p className="text-zinc-400 text-xs mt-1">{getAvailableCount(form.date)} time slots available</p>
+                {form.date && (
+                  <div className="mt-3 p-3 rounded-xl border" style={{ borderColor: GOLD, background: 'rgba(246,189,45,0.06)' }}>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={13} style={{ color: GOLD }} />
+                      <span className="text-white font-medium text-xs">
+                        {new Date(form.date + 'T00:00:00').toLocaleDateString('en-SG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                      </span>
+                    </div>
+                    <p className="text-zinc-400 text-xs mt-1">{getAvailableCount(form.date)} time slots available</p>
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Time slots */}
+              <div className="flex-1 w-full">
+                {form.date ? (
+                  <>
+                    <h3 className="text-white font-semibold mb-1">Available Time Slots</h3>
+                    <p className="text-zinc-500 text-sm mb-4">Each slot is 1 hour. Our team will contact you to confirm scheduling for complex jobs.</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {TIME_SLOTS.map((t) => {
+                        const booked = (BOOKED_SLOTS[form.date] || []).includes(t);
+                        const selected = form.time === t;
+                        return (
+                          <button
+                            key={t}
+                            disabled={booked}
+                            onClick={() => setForm((f) => ({ ...f, time: t }))}
+                            className="py-3 rounded-lg border text-sm font-medium transition-all"
+                            style={
+                              selected
+                                ? { background: GOLD, borderColor: GOLD, color: '#000', fontWeight: 700 }
+                                : booked
+                                ? { borderColor: '#27272a', color: '#52525b', cursor: 'not-allowed', background: '#18181b' }
+                                : { borderColor: '#3f3f46', color: '#e4e4e7', background: '#27272a' }
+                            }
+                          >
+                            {booked ? <span className="line-through">{formatTime(t)}</span> : formatTime(t)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center min-h-48 text-center rounded-xl border border-zinc-800 bg-zinc-900 p-8">
+                    <Clock size={36} className="mb-3" style={{ color: '#3f3f46' }} />
+                    <p className="text-zinc-500 text-sm">Select a date on the calendar to see available time slots</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-4 mt-8">
               <button onClick={() => setStep(1)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
               <button
                 disabled={!canProceed()}
                 onClick={() => setStep(3)}
-                className="px-8 py-3 font-semibold text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white"
-                style={{ background: GOLD }}
-              >
-                Continue — Choose Time
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 3: Time ── */}
-        {step === 3 && (
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-2">Choose a Time Slot</h2>
-            <p className="text-zinc-400 mb-1">
-              Available slots for{' '}
-              <span className="text-white font-medium">
-                {new Date(form.date + 'T00:00:00').toLocaleDateString('en-SG', { weekday: 'short', day: 'numeric', month: 'short' })}
-              </span>
-            </p>
-            <p className="text-zinc-500 text-sm mb-8">Each slot is 1 hour. Our team will contact you to confirm scheduling for complex jobs.</p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 max-w-xl mb-10">
-              {TIME_SLOTS.map((t) => {
-                const booked = (BOOKED_SLOTS[form.date] || []).includes(t);
-                const selected = form.time === t;
-                return (
-                  <button
-                    key={t}
-                    disabled={booked}
-                    onClick={() => setForm((f) => ({ ...f, time: t }))}
-                    className="py-3 rounded-lg border text-sm font-medium transition-all"
-                    style={
-                      selected
-                        ? { background: GOLD, borderColor: GOLD, color: '#000', fontWeight: 700 }
-                        : booked
-                        ? { borderColor: '#27272a', color: '#52525b', cursor: 'not-allowed', background: '#18181b' }
-                        : { borderColor: '#3f3f46', color: '#e4e4e7', background: '#27272a' }
-                    }
-                  >
-                    {booked ? <span className="line-through">{formatTime(t)}</span> : formatTime(t)}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex gap-4">
-              <button onClick={() => setStep(2)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
-              <button
-                disabled={!canProceed()}
-                onClick={() => setStep(4)}
                 className="px-8 py-3 font-semibold text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white"
                 style={{ background: GOLD }}
               >
@@ -430,8 +468,8 @@ export function BookingPage() {
           </div>
         )}
 
-        {/* ── STEP 4: Logistics ── */}
-        {step === 4 && (
+        {/* ── STEP 3: Logistics ── */}
+        {step === 3 && (
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">Car Logistics</h2>
             <p className="text-zinc-400 mb-8">How would you like to arrange your car's transport?</p>
@@ -538,10 +576,10 @@ export function BookingPage() {
             )}
 
             <div className="flex gap-4">
-              <button onClick={() => setStep(3)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
+              <button onClick={() => setStep(2)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
               <button
                 disabled={!canProceed()}
-                onClick={() => setStep(5)}
+                onClick={() => setStep(4)}
                 className="px-8 py-3 font-semibold text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white"
                 style={{ background: GOLD }}
               >
@@ -551,8 +589,8 @@ export function BookingPage() {
           </div>
         )}
 
-        {/* ── STEP 5: Customer Details ── */}
-        {step === 5 && (
+        {/* ── STEP 4: Customer Details ── */}
+        {step === 4 && (
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">Your Details</h2>
             <p className="text-zinc-400 mb-8">Almost done — fill in your contact and vehicle info.</p>
@@ -633,7 +671,7 @@ export function BookingPage() {
             </div>
 
             <div className="flex gap-4">
-              <button onClick={() => setStep(4)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
+              <button onClick={() => setStep(3)} className="px-6 py-3 font-medium text-zinc-400 hover:text-white border border-zinc-700 rounded-lg transition-colors text-sm">Back</button>
               <button
                 disabled={!canProceed()}
                 onClick={handleSubmit}
@@ -646,8 +684,8 @@ export function BookingPage() {
           </div>
         )}
 
-        {/* ── STEP 6: Confirmation ── */}
-        {step === 6 && (
+        {/* ── STEP 5: Confirmation ── */}
+        {step === 5 && (
           <div className="flex flex-col items-center text-center py-16">
             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
               style={{ background: 'rgba(246,189,45,0.12)', border: `2px solid ${GOLD}` }}>
