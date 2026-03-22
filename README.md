@@ -76,7 +76,7 @@ source venv/Scripts/activate
 pip install -r requirements.txt
 
 # 4. Start the backend server
-1
+python -m uvicorn main:app --reload
 ```
 
 > **Note:** Use `python -m uvicorn` instead of just `uvicorn` — this avoids PATH issues on Windows where the command may not be recognised even after installing.
