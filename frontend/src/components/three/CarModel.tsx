@@ -5,6 +5,9 @@ import { useStore } from '../../store/useStore';
 import { getFinish } from '../../utils/dataLookup';
 import { FINISH_PRESETS } from '../../data/modCatalog';
 
+const LIGHT_GLASS_MESHES = new Set(['Plane010_balck_tint_glass_0', 'Plane035_balck_tint_glass_0']);
+const RIM_MESHES = new Set(['Plane016_metal_0', 'Plane018_metal_0', 'Plane020_metal_0', 'Plane074_metal_0']);
+
 export function CarModel() {
   const { scene } = useGLTF('/models/toyota_supra.glb');
   const customization = useStore((s) => s.customization);
@@ -16,14 +19,17 @@ export function CarModel() {
     clone.traverse((child) => {
       if (child instanceof Mesh && child.material instanceof MeshStandardMaterial) {
         child.material = child.material.clone();
-        const name = child.material.name;
-        if (name === 'metal') {
-          const groupKey = isWheelMesh(child) ? 'metal_wheel' : 'metal_other';
-          if (!map.has(groupKey)) map.set(groupKey, []);
-          map.get(groupKey)!.push(child.material);
+        const matName = child.material.name;
+        // Separate headlight/taillight glass from window glass
+        if (matName === 'balck_tint_glass' && LIGHT_GLASS_MESHES.has(child.name)) {
+          if (!map.has('glass_light')) map.set('glass_light', []);
+          map.get('glass_light')!.push(child.material);
+        } else if (matName === 'metal' && RIM_MESHES.has(child.name)) {
+          if (!map.has('rim')) map.set('rim', []);
+          map.get('rim')!.push(child.material);
         } else {
-          if (!map.has(name)) map.set(name, []);
-          map.get(name)!.push(child.material);
+          if (!map.has(matName)) map.set(matName, []);
+          map.get(matName)!.push(child.material);
         }
       }
     });
@@ -41,15 +47,22 @@ export function CarModel() {
       m.metalness = finish.metalness;
     });
 
-    // Window tint
+    // Window tint (windows only — not headlights/taillights)
     materialMap.get('balck_tint_glass')?.forEach((m) => {
       m.transparent = true;
-      m.opacity = 1.0 - customization.windowTint;
+      m.opacity = customization.windowTint;
       m.depthWrite = false;
     });
 
-    // Rim color (wheel assemblies)
-    materialMap.get('metal_wheel')?.forEach((m) => {
+    // Headlight/taillight glass — always fully transparent
+    materialMap.get('glass_light')?.forEach((m) => {
+      m.transparent = true;
+      m.opacity = 0;
+      m.depthWrite = false;
+    });
+
+    // Rim color (wheel metal only)
+    materialMap.get('rim')?.forEach((m) => {
       m.color.set(customization.rimColor);
     });
 
@@ -62,19 +75,5 @@ export function CarModel() {
   return <primitive object={clonedScene} scale={1} position={[0, -0.5, 0]} />;
 }
 
-function isWheelMesh(mesh: Mesh): boolean {
-  // Walk up the tree to check if this mesh is part of a wheel assembly
-  let node = mesh.parent;
-  while (node) {
-    const name = node.name.toLowerCase();
-    if (name.includes('wheel') || name.includes('tire') || name.includes('rim')) {
-      return true;
-    }
-    node = node.parent;
-  }
-  // Fallback: check mesh name
-  const meshName = mesh.name.toLowerCase();
-  return meshName.includes('wheel') || meshName.includes('rim');
-}
 
 useGLTF.preload('/models/toyota_supra.glb');

@@ -65,7 +65,7 @@ export function CustomizerPanel() {
             value={customization.rimColor}
             onChange={setRimColor}
             label="Rim Color"
-            showPresets={false}
+            showPresets
           />
         )}
 
@@ -74,7 +74,7 @@ export function CustomizerPanel() {
             value={customization.caliperColor}
             onChange={setCaliperColor}
             label="Caliper Color"
-            showPresets={false}
+            showPresets
           />
         )}
 
