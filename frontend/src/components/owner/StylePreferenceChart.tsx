@@ -51,8 +51,8 @@ export function StylePreferenceChart() {
             </Pie>
             <Tooltip
               contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-              formatter={(value: number, name: string) => [
-                `${value} customers (${total > 0 ? Math.round((value / total) * 100) : 0}%)`,
+              formatter={(value, name) => [
+                `${Number(value ?? 0)} customers (${total > 0 ? Math.round((Number(value ?? 0) / total) * 100) : 0}%)`,
                 name,
               ]}
             />

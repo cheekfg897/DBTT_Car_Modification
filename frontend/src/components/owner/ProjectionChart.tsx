@@ -62,7 +62,7 @@ export function ProjectionChart() {
             <Tooltip
               contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
               labelStyle={{ color: '#fff' }}
-              formatter={(value: number) => [`SGD ${value.toLocaleString()}`, '']}
+              formatter={(value) => [`SGD ${Number(value ?? 0).toLocaleString()}`, '']}
             />
             <Legend
               formatter={(value) => (

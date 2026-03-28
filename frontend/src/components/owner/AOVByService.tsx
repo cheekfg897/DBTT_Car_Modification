@@ -42,7 +42,7 @@ export function AOVByService() {
             />
             <Tooltip
               contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-              formatter={(value: number) => [`SGD ${value.toLocaleString()}`, 'Avg Order Value']}
+              formatter={(value) => [`SGD ${Number(value ?? 0).toLocaleString()}`, 'Avg Order Value']}
             />
             <Bar dataKey="avgOrderValue" radius={[0, 4, 4, 0]}>
               {data.map((_, i) => (

@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { FINISH_PRESETS, RESPRAY_BASE_PRICE, TINT_BASE_PRICE, RIM_COLOR_PRICE, CALIPER_COLOR_PRICE } from '../../data/modCatalog';
 import { getMod, getFinish } from '../../utils/dataLookup';
+import type { ModOption } from '../../types/customization';
 
 export function PriceBreakdown() {
   const customization = useStore((s) => s.customization);
@@ -19,7 +20,7 @@ export function PriceBreakdown() {
 
   const selectedMods = customization.selectedMods
     .map((id) => getMod(id))
-    .filter(Boolean) as typeof MOD_OPTIONS;
+    .filter(Boolean) as ModOption[];
 
   const total =
     baseItems.reduce((sum, item) => sum + item.price, 0) +

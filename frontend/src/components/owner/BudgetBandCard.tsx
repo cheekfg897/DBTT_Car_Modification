@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
+interface TooltipEntry {
+  payload?: { avgOV: number; name: string; shortName: string; value: number };
+}
+
 interface BudgetBand {
   band:          string;
   avgOrderValue: number;
@@ -47,18 +51,21 @@ export function BudgetBandCard() {
             </Pie>
             <Tooltip
               contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-              formatter={(value: number, _name: string, props: any) => [
-                `${value} orders — Avg SGD ${props.payload.avgOV.toLocaleString()}`,
-                props.payload.name,
+              formatter={(value, _name, props: TooltipEntry) => [
+                `${Number(value ?? 0)} orders — Avg SGD ${props.payload?.avgOV.toLocaleString() ?? ''}`,
+                props.payload?.name ?? '',
               ]}
             />
             <Legend
-              formatter={(_value: string, entry: any) => (
-                <span style={{ color: '#a1a1aa', fontSize: '11px' }}>
-                  {entry.payload.shortName}{' '}
-                  ({total > 0 ? Math.round((entry.payload.value / total) * 100) : 0}%)
-                </span>
-              )}
+              formatter={(_value, entry) => {
+                const p = (entry as { payload?: { shortName?: string; value?: number } }).payload;
+                return (
+                  <span style={{ color: '#a1a1aa', fontSize: '11px' }}>
+                    {p?.shortName}{' '}
+                    ({total > 0 ? Math.round(((p?.value ?? 0) / total) * 100) : 0}%)
+                  </span>
+                );
+              }}
             />
           </PieChart>
         </ResponsiveContainer>
