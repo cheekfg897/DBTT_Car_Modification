@@ -110,6 +110,12 @@ export function LandingPage() {
               </a>
             ))}
             <button
+              onClick={() => navigate('/track')}
+              className="text-sm font-medium text-white hover:text-[#f6bd2d] transition-colors tracking-wide"
+            >
+              Track Booking
+            </button>
+            <button
               onClick={() => navigate('/book')}
               className="ml-4 px-6 py-2.5 text-sm font-semibold border transition-colors"
               style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
@@ -206,15 +212,13 @@ export function LandingPage() {
               >
                 Try 3D Customizer
               </button>
-              <a
-                href={WHATSAPP}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => navigate('/track')}
                 className="px-8 py-3 text-base font-semibold border transition-colors"
-                style={{ borderColor: 'white', color: 'white' }}
+                style={{ borderColor: 'white', color: 'white', fontFamily: "'Heebo', sans-serif" }}
               >
-                WhatsApp Us
-              </a>
+                Track My Booking
+              </button>
             </div>
           </div>
         </div>
@@ -606,6 +610,14 @@ export function LandingPage() {
                     className="hover:text-[#f6bd2d] transition-colors flex items-center gap-1 text-zinc-400 text-sm"
                   >
                     <ChevronRight size={12} /> Customize Your Car
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/track')}
+                    className="hover:text-[#f6bd2d] transition-colors flex items-center gap-1 text-zinc-400 text-sm"
+                  >
+                    <ChevronRight size={12} /> Track My Booking
                   </button>
                 </li>
                 <li><a href="#contact" className="hover:text-[#f6bd2d] transition-colors flex items-center gap-1"><ChevronRight size={12} /> Contact Us</a></li>

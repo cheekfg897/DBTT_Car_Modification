@@ -35,7 +35,7 @@ def get_kpi_stats() -> dict:
     """
     Four operational KPI cards, consistent with notebook figures:
     - Total Revenue  = SGD 525,609  (2025 digital projection, section 6)
-    - Orders/month   = 28           (~374 annual customers ÷ 12, section 6)
+    - Orders/month   = 28           (~309 annual customers ÷ 12, section 6)
     - Avg Order Value= SGD 2,666    (transaction analytics mean, section 9)
     - Top Service    = Car Wrap     (highest service mentions, section 9)
     """
