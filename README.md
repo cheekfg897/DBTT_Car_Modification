@@ -194,9 +194,49 @@ All data is synthetic and generated deterministically from fixed assumptions (de
 |---|---|---|
 | `/` | All | Landing page |
 | `/customize` | Customer | 3D car customizer with AI chatbot |
-| `/booking` | Customer | Appointment booking |
+| `/book` | Customer | Appointment booking |
+| `/track` | Customer | Track booking status |
+| `/staff` | Staff | Role selection — choose Worker or Owner |
+| `/worker` | Worker | Job queue and booking status management |
 | `/owner` | Owner | Full analytics dashboard (requires backend) |
-| `/worker` | Worker | Job queue, booking tracker, popular bundles |
+
+---
+
+## Navigating the App
+
+With both servers running, open `http://localhost:5173` in your browser. All sections are accessible from the landing page.
+
+### Customer flow
+
+1. **Design & Book** — click **Design & Book** on the hero (or **Customize Your Car** in the nav) to open the 3D customizer
+   - Pick a body colour, finish, window tint, rim colour, caliper colour, and optional mods using the panel on the right
+   - When happy with the design, scroll to the bottom of the panel and click **Book Appointment** — your selections are carried over automatically
+   - Complete the 5-step booking form (services → date & time → logistics → your details → confirm)
+   - On the confirmation screen your **booking reference** (e.g. `APT-006`) is shown — keep this to track your booking
+
+2. **Track a booking** — click **Track Booking** in the nav or **Track My Booking** on the hero
+   - Enter your booking reference (e.g. `APT-001`) or the email address used when booking
+   - The page shows your current status, a 4-step progress timeline, estimated duration, and logistics details
+   - When your car is ready, a **WhatsApp** button appears to arrange collection directly with the workshop
+
+> **Demo bookings to try:** `APT-001` through `APT-005` are pre-loaded. APT-003 is in-progress, APT-004 is completed.
+
+---
+
+### Worker flow
+
+1. Click **Staff Access** in the nav (or footer) → select **Worker**
+2. The worker dashboard shows all appointments in a 3-column Kanban board: **New Bookings → In Progress → Completed**
+3. Click **Start Job** on a card to move it to In Progress — this immediately updates the customer's tracking page
+4. Click **Mark Done** to move it to Completed — the customer's tracking page shows the WhatsApp collection button
+
+---
+
+### Owner flow
+
+1. Click **Staff Access** in the nav (or footer) → select **Owner**
+2. The owner dashboard loads analytics from the backend — make sure the backend server is running on port 8000
+3. Panels include: live KPIs, revenue projection, service breakdown, AOV by service, customer budget segments, cross-sell recommendations, trend insights, and supply alerts
 
 ---
 

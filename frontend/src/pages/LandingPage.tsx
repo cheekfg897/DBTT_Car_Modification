@@ -116,6 +116,12 @@ export function LandingPage() {
               Track Booking
             </button>
             <button
+              onClick={() => navigate('/staff')}
+              className="text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors tracking-wide"
+            >
+              Staff Access
+            </button>
+            <button
               onClick={() => navigate('/book')}
               className="ml-4 px-6 py-2.5 text-sm font-semibold border transition-colors"
               style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
@@ -162,6 +168,12 @@ export function LandingPage() {
             >
               Customize Your Car
             </button>
+            <button
+              onClick={() => { setMenuOpen(false); navigate('/staff'); }}
+              className="block w-full text-center px-6 py-2.5 text-sm font-semibold text-zinc-400 hover:text-white border border-zinc-700 transition-colors"
+            >
+              Staff Access
+            </button>
           </div>
         )}
       </nav>
@@ -199,26 +211,28 @@ export function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('/book')}
+                onClick={() => navigate('/customize')}
                 className="px-8 py-3 text-base font-semibold text-black hover:bg-white transition-colors"
                 style={{ background: GOLD, fontFamily: "'Heebo', sans-serif" }}
               >
-                Book an Appointment
-              </button>
-              <button
-                onClick={() => navigate('/customize')}
-                className="px-8 py-3 text-base font-semibold border transition-colors"
-                style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
-              >
-                Try 3D Customizer
+                Design &amp; Book
               </button>
               <button
                 onClick={() => navigate('/track')}
                 className="px-8 py-3 text-base font-semibold border transition-colors"
-                style={{ borderColor: 'white', color: 'white', fontFamily: "'Heebo', sans-serif" }}
+                style={{ borderColor: GOLD, color: GOLD, fontFamily: "'Heebo', sans-serif" }}
               >
                 Track My Booking
               </button>
+              <a
+                href={WHATSAPP}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-3 text-base font-semibold border transition-colors"
+                style={{ borderColor: 'white', color: 'white', fontFamily: "'Heebo', sans-serif" }}
+              >
+                WhatsApp Us
+              </a>
             </div>
           </div>
         </div>
@@ -618,6 +632,14 @@ export function LandingPage() {
                     className="hover:text-[#f6bd2d] transition-colors flex items-center gap-1 text-zinc-400 text-sm"
                   >
                     <ChevronRight size={12} /> Track My Booking
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/staff')}
+                    className="hover:text-zinc-300 transition-colors flex items-center gap-1 text-zinc-600 text-sm"
+                  >
+                    <ChevronRight size={12} /> Staff Access
                   </button>
                 </li>
                 <li><a href="#contact" className="hover:text-[#f6bd2d] transition-colors flex items-center gap-1"><ChevronRight size={12} /> Contact Us</a></li>
