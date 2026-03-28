@@ -67,12 +67,14 @@ function inferServicesFromDesign(customization: { finishType: string; windowTint
 export function BookingPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const addAppointment = useStore((s) => s.addAppointment);
+  const addAppointment    = useStore((s) => s.addAppointment);
+  const appointments      = useStore((s) => s.appointments);
   const savedCustomization = useStore((s) => s.customization);
 
   const fromCustomizer = (location.state as { fromCustomizer?: boolean } | null)?.fromCustomizer === true;
 
-  const [step, setStep] = useState<Step>(1);
+  const [step,        setStep]        = useState<Step>(1);
+  const [submittedId, setSubmittedId] = useState('');
   const [form, setForm] = useState<FormData>(() => ({
     services: fromCustomizer ? inferServicesFromDesign(savedCustomization) : [],
     date: '',
@@ -128,8 +130,10 @@ export function BookingPage() {
   };
 
   const handleSubmit = () => {
+    const nextNum = String(appointments.length + 1).padStart(3, '0');
+    const newId   = `APT-${nextNum}`;
     const appointment: AppointmentBooking = {
-      id: `APT-${Date.now()}`,
+      id: newId,
       customerName: form.customerName,
       email: form.email,
       phone: form.phone,
@@ -147,6 +151,7 @@ export function BookingPage() {
       createdAt: new Date().toISOString(),
     };
     addAppointment(appointment);
+    setSubmittedId(newId);
     setStep(5);
   };
 
@@ -680,10 +685,21 @@ export function BookingPage() {
               <CheckCircle size={40} style={{ color: GOLD }} />
             </div>
             <h2 className="text-3xl font-bold text-white mb-3">Booking Confirmed!</h2>
-            <p className="text-zinc-400 mb-8 max-w-md">
+            <p className="text-zinc-400 mb-4 max-w-md">
               Thank you, <span className="text-white font-medium">{form.customerName}</span>! Your appointment has been submitted.
               Our team will contact you at <span className="text-white">{form.phone}</span> within 24 hours to confirm the details.
             </p>
+            <div className="flex items-center gap-3 bg-zinc-900 border border-zinc-700 rounded-lg px-5 py-3 mb-8">
+              <span className="text-zinc-400 text-sm">Your booking reference:</span>
+              <span className="text-white font-bold tracking-widest text-base">{submittedId}</span>
+              <button
+                onClick={() => navigate(`/track?id=${submittedId}`)}
+                className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-md transition-colors"
+                style={{ background: GOLD, color: '#000' }}
+              >
+                Track Booking →
+              </button>
+            </div>
 
             <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6 text-left w-full max-w-md mb-8">
               <h4 className="text-white font-semibold mb-4">Appointment Details</h4>

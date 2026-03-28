@@ -1,16 +1,27 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Search } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { BookingStatusCard } from '../components/customer/BookingStatusCard';
 import type { AppointmentBooking } from '../types/booking';
 
 export function TrackingPage() {
-  const navigate     = useNavigate();
-  const appointments = useStore((s) => s.appointments);
-  const [query,    setQuery]    = useState('');
+  const navigate       = useNavigate();
+  const [searchParams] = useSearchParams();
+  const appointments   = useStore((s) => s.appointments);
+  const [query,    setQuery]    = useState(searchParams.get('id') ?? '');
   const [searched, setSearched] = useState(false);
   const [result,   setResult]   = useState<AppointmentBooking | null>(null);
+
+  // Auto-search if arriving from booking confirmation with ?id=
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (id) {
+      const found = appointments.find((a) => a.id.toLowerCase() === id.toLowerCase()) ?? null;
+      setResult(found);
+      setSearched(true);
+    }
+  }, []);
 
   function handleSearch() {
     const q = query.trim().toLowerCase();
