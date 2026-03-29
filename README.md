@@ -28,7 +28,6 @@ Make sure the following are installed on your machine before proceeding.
 
 ```
 DBTT_Car_Modification/
-├── analysis.ipynb          ← Business analysis notebook (academic reference)
 ├── backend/                ← Python FastAPI analytics server
 │   ├── main.py             ← FastAPI app (entry point)
 │   ├── analysis.py         ← All analytics logic as callable Python functions
@@ -158,7 +157,7 @@ Nothing is computed inside `main.py` itself — it is purely the routing layer.
 
 ### `analysis.py` — All Analytics as Python Functions
 
-`analysis.py` is a port of the business analysis notebook (`analysis.ipynb`) into callable Python functions. Every number shown on the owner dashboard originates here.
+`analysis.py` contains all the analytical logic as callable Python functions. Every number shown on the owner dashboard originates here.
 
 All data is synthetic and generated deterministically from fixed assumptions (defined in `_ASSUMPTIONS`) and a seeded random number generator (`np.random.default_rng(42)`), so results are identical on every run.
 
