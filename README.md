@@ -36,8 +36,8 @@ DBTT_Car_Modification/
 │   └── requirements.txt    ← Python dependencies
 └── frontend/               ← React + Vite web app
     ├── src/
-    │   ├── pages/          ← CustomerPage, OwnerPage, WorkerPage, BookingPage
-    │   ├── components/     ← owner/, worker/, customizer/, three/, layout/
+    │   ├── pages/          ← CustomerPage, OwnerPage, WorkerPage, BookingPage, TrackingPage, StaffPortalPage, WorkerApp, OwnerApp
+    │   ├── components/     ← owner/, worker/, customer/, customizer/, three/, layout/
     │   ├── engine/         ← analyticsEngine, recommendationEngine, chatService
     │   └── data/           ← mock orders, inventory, bookings, mod catalog
     └── package.json
