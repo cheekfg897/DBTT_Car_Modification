@@ -1,7 +1,5 @@
 import { MOCK_ORDERS } from '../data/mockOrders';
-import { MOCK_INVENTORY } from '../data/mockInventory';
 import { getMod, getColor } from '../utils/dataLookup';
-import type { Booking } from '../types/booking';
 
 export interface ComboInsight {
   modA: string;
@@ -17,12 +15,6 @@ export interface TrendInsight {
   type: 'up' | 'down';
 }
 
-export interface SupplyAlert {
-  itemName: string;
-  stock: number;
-  minStock: number;
-  severity: 'warning' | 'critical';
-}
 
 export interface MonthlyRevenue {
   month: string;
@@ -165,31 +157,6 @@ export function getTrendInsights(): TrendInsight[] {
   return insights.sort((a, b) => Math.abs(b.change) - Math.abs(a.change)).slice(0, 6);
 }
 
-export function getSupplyAlerts(bookings: Booking[]): SupplyAlert[] {
-  const alerts: SupplyAlert[] = [];
-  const pendingMods = new Map<string, number>();
-
-  for (const booking of bookings) {
-    if (booking.status !== 'done') {
-      for (const modId of booking.mods) {
-        pendingMods.set(modId, (pendingMods.get(modId) || 0) + 1);
-      }
-    }
-  }
-
-  for (const item of MOCK_INVENTORY) {
-    if (item.stock <= item.minStock) {
-      alerts.push({
-        itemName: item.name,
-        stock: item.stock,
-        minStock: item.minStock,
-        severity: item.stock === 0 ? 'critical' : 'warning',
-      });
-    }
-  }
-
-  return alerts.sort((a, b) => (a.severity === 'critical' ? -1 : 1) - (b.severity === 'critical' ? -1 : 1));
-}
 
 export function getKPIStats() {
   const totalRevenue = MOCK_ORDERS.reduce((sum, o) => sum + o.totalPrice, 0);

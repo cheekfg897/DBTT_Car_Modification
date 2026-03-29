@@ -317,3 +317,125 @@ def get_uplift_kpis() -> dict:
         "topService":          top_service,
         "topCrossSell":        top_crosssell,
     }
+
+
+# ---------------------------------------------------------------------------
+# Section 12 — Predictive inventory analysis
+# ---------------------------------------------------------------------------
+
+# Maps transaction service names → inventory item names (from mock_data.py)
+_SERVICE_TO_INVENTORY = {
+    "Widebody Kit":     "Widebody Kit (Universal)",
+    "Cat-Back Exhaust": "Cat-Back Exhaust Kit (Universal)",
+    "Ducktail Spoiler": "Ducktail Spoiler (Universal)",
+    "Sport Side Skirts":"Sport Side Skirts",
+    "Carbon Fiber Hood":"Carbon Fiber Hood (Universal)",
+    "GT Wing":          "GT Wing Kit",
+}
+
+# Full inventory — single source of truth, synced with mock_data.py
+_INVENTORY = [
+    {"name": "Matte Vinyl Wrap (per roll)",      "category": "wrap",      "stock": 4,  "minStock": 5,  "unitCost": 280,  "supplier": "3M Automotive"},
+    {"name": "Gloss Vinyl Wrap (per roll)",      "category": "wrap",      "stock": 8,  "minStock": 5,  "unitCost": 250,  "supplier": "3M Automotive"},
+    {"name": "Satin Vinyl Wrap (per roll)",      "category": "wrap",      "stock": 3,  "minStock": 4,  "unitCost": 300,  "supplier": "Avery Dennison"},
+    {"name": "Chrome Vinyl Wrap (per roll)",     "category": "wrap",      "stock": 2,  "minStock": 3,  "unitCost": 450,  "supplier": "Avery Dennison"},
+    {"name": "Carbon Fiber Sheet",               "category": "material",  "stock": 6,  "minStock": 4,  "unitCost": 380,  "supplier": "Toray Carbon"},
+    {"name": "Window Tint Film - Light",         "category": "tint",      "stock": 12, "minStock": 5,  "unitCost": 45,   "supplier": "Llumar"},
+    {"name": "Window Tint Film - Dark",          "category": "tint",      "stock": 2,  "minStock": 5,  "unitCost": 50,   "supplier": "Llumar"},
+    {"name": "Window Tint Film - Limo",          "category": "tint",      "stock": 7,  "minStock": 3,  "unitCost": 55,   "supplier": "Llumar"},
+    {"name": "Cat-Back Exhaust Kit (Universal)", "category": "exhaust",   "stock": 3,  "minStock": 3,  "unitCost": 420,  "supplier": "Akrapovic"},
+    {"name": "Titanium Exhaust Kit",             "category": "exhaust",   "stock": 1,  "minStock": 2,  "unitCost": 1100, "supplier": "Akrapovic"},
+    {"name": "Valved Exhaust System",            "category": "exhaust",   "stock": 2,  "minStock": 2,  "unitCost": 1600, "supplier": "Capristo"},
+    {"name": "Ducktail Spoiler (Universal)",     "category": "spoiler",   "stock": 5,  "minStock": 3,  "unitCost": 180,  "supplier": "Seibon"},
+    {"name": "GT Wing Kit",                      "category": "spoiler",   "stock": 2,  "minStock": 2,  "unitCost": 550,  "supplier": "APR Performance"},
+    {"name": "Swan Neck Wing",                   "category": "spoiler",   "stock": 1,  "minStock": 1,  "unitCost": 900,  "supplier": "APR Performance"},
+    {"name": "Brake Caliper Paint Kit",          "category": "paint",     "stock": 15, "minStock": 5,  "unitCost": 35,   "supplier": "G2 Caliper"},
+    {"name": "Clear Coat (per gallon)",          "category": "paint",     "stock": 6,  "minStock": 4,  "unitCost": 120,  "supplier": "PPG Industries"},
+    {"name": "Primer (per gallon)",              "category": "paint",     "stock": 8,  "minStock": 4,  "unitCost": 85,   "supplier": "PPG Industries"},
+    {"name": "Street Aero Kit (Supra)",          "category": "bodykit",   "stock": 1,  "minStock": 1,  "unitCost": 1200, "supplier": "Varis"},
+    {"name": "Widebody Kit (Universal)",         "category": "bodykit",   "stock": 0,  "minStock": 1,  "unitCost": 2500, "supplier": "Liberty Walk"},
+    {"name": "Carbon Aero Package",              "category": "bodykit",   "stock": 1,  "minStock": 1,  "unitCost": 4000, "supplier": "Seibon"},
+    {"name": "Vented Hood (Supra)",              "category": "hood",      "stock": 2,  "minStock": 1,  "unitCost": 400,  "supplier": "Seibon"},
+    {"name": "Carbon Fiber Hood (Universal)",    "category": "hood",      "stock": 1,  "minStock": 1,  "unitCost": 900,  "supplier": "Seibon"},
+    {"name": "Sport Side Skirts",                "category": "sideskirt", "stock": 4,  "minStock": 2,  "unitCost": 250,  "supplier": "Varis"},
+    {"name": "Carbon Side Skirts",               "category": "sideskirt", "stock": 2,  "minStock": 1,  "unitCost": 550,  "supplier": "Seibon"},
+]
+
+_WEEKS_PER_YEAR = 52
+
+
+def get_inventory_predictions() -> list[dict]:
+    """
+    Predictive inventory analysis using synthetic transaction demand data.
+
+    For items mapped to a transaction service: weekly demand is derived from
+    how often that service appears (primary + secondary) across 320 orders
+    scaled to a yearly rate.
+
+    For items with no transaction mapping: weekly demand falls back to
+    minStock / 4 (i.e. expected to consume one reorder cycle per month).
+
+    Returns all 24 items sorted by urgency (critical → warning → healthy),
+    then by days until stockout ascending.
+    """
+    df = _get_transactions()
+
+    # Count total mentions per service (primary + secondary)
+    mentions = pd.concat(
+        [df["primary_service"], df["secondary_service"].dropna()],
+        ignore_index=True,
+    )
+    service_counts = mentions.value_counts().to_dict()
+
+    # Build weekly demand per inventory item
+    results = []
+    for item in _INVENTORY:
+        name     = item["name"]
+        stock    = item["stock"]
+        min_stock = item["minStock"]
+
+        # Find matching service in transaction data
+        matched_service = next(
+            (svc for svc, inv in _SERVICE_TO_INVENTORY.items() if inv == name),
+            None,
+        )
+
+        if matched_service and matched_service in service_counts:
+            weekly_demand = round(service_counts[matched_service] / _WEEKS_PER_YEAR, 2)
+        else:
+            # Fallback: consume minStock units every 4 weeks
+            weekly_demand = round(min_stock / 4, 2)
+
+        # Days until stockout
+        if weekly_demand > 0:
+            days_until_stockout = round((stock / weekly_demand) * 7)
+        else:
+            days_until_stockout = 999
+
+        # Urgency classification
+        if days_until_stockout <= 7:
+            urgency = "critical"
+        elif days_until_stockout <= 14:
+            urgency = "warning"
+        else:
+            urgency = "healthy"
+
+        # Reorder quantity: 4 weeks of projected demand, minimum 1
+        reorder_qty = max(1, _round_half_up(weekly_demand * 4))
+
+        results.append({
+            "name":              name,
+            "category":          item["category"],
+            "stock":             stock,
+            "minStock":          min_stock,
+            "unitCost":          item["unitCost"],
+            "supplier":          item["supplier"],
+            "weeklyDemand":      weekly_demand,
+            "daysUntilStockout": days_until_stockout,
+            "urgency":           urgency,
+            "reorderQty":        reorder_qty,
+        })
+
+    # Sort: critical first, then warning, then healthy; within each group by days asc
+    urgency_order = {"critical": 0, "warning": 1, "healthy": 2}
+    return sorted(results, key=lambda r: (urgency_order[r["urgency"]], r["daysUntilStockout"]))

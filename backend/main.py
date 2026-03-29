@@ -23,7 +23,7 @@ Endpoints from mock_data.py (ported frontend-only items):
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from analysis import get_projections, get_service_stats, get_recommendations, get_uplift_kpis
+from analysis import get_projections, get_service_stats, get_recommendations, get_uplift_kpis, get_inventory_predictions
 from mock_data import get_monthly_revenue, get_kpi_stats, get_service_breakdown, get_trend_insights, get_supply_alerts
 
 app = FastAPI(title="Vos Automotive Analytics API")
@@ -58,6 +58,11 @@ def recommendations():
 @app.get("/api/uplift-kpis")
 def uplift_kpis():
     return get_uplift_kpis()
+
+
+@app.get("/api/inventory-predictions")
+def inventory_predictions():
+    return get_inventory_predictions()
 
 
 # ---------------------------------------------------------------------------

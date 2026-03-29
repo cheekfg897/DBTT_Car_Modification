@@ -115,18 +115,34 @@ def get_trend_insights() -> list[dict]:
 
 def get_supply_alerts() -> list[dict]:
     """
-    Inventory supply alerts (ported from frontend mockInventory.ts).
+    Inventory supply alerts — full 24-item list synced with frontend mockInventory.ts.
     Returns items at or below minimum stock, sorted critical-first.
     """
     inventory = [
-        {"name": "Matte Vinyl Wrap (per roll)",         "stock": 4,  "minStock": 5},
-        {"name": "Satin Vinyl Wrap (per roll)",          "stock": 3,  "minStock": 4},
-        {"name": "Chrome Vinyl Wrap (per roll)",         "stock": 2,  "minStock": 3},
-        {"name": "Window Tint Film - Dark",              "stock": 2,  "minStock": 5},
-        {"name": "Titanium Exhaust Kit",                 "stock": 1,  "minStock": 2},
-        {"name": "Cat-Back Exhaust Kit (Universal)",     "stock": 3,  "minStock": 3},
-        {"name": "Street Aero Kit (Supra)",              "stock": 1,  "minStock": 1},
-        {"name": "Widebody Kit (Universal)",             "stock": 0,  "minStock": 1},
+        {"name": "Matte Vinyl Wrap (per roll)",         "category": "wrap",      "stock": 4,  "minStock": 5,  "unitCost": 280,  "supplier": "3M Automotive"},
+        {"name": "Gloss Vinyl Wrap (per roll)",         "category": "wrap",      "stock": 8,  "minStock": 5,  "unitCost": 250,  "supplier": "3M Automotive"},
+        {"name": "Satin Vinyl Wrap (per roll)",         "category": "wrap",      "stock": 3,  "minStock": 4,  "unitCost": 300,  "supplier": "Avery Dennison"},
+        {"name": "Chrome Vinyl Wrap (per roll)",        "category": "wrap",      "stock": 2,  "minStock": 3,  "unitCost": 450,  "supplier": "Avery Dennison"},
+        {"name": "Carbon Fiber Sheet",                  "category": "material",  "stock": 6,  "minStock": 4,  "unitCost": 380,  "supplier": "Toray Carbon"},
+        {"name": "Window Tint Film - Light",            "category": "tint",      "stock": 12, "minStock": 5,  "unitCost": 45,   "supplier": "Llumar"},
+        {"name": "Window Tint Film - Dark",             "category": "tint",      "stock": 2,  "minStock": 5,  "unitCost": 50,   "supplier": "Llumar"},
+        {"name": "Window Tint Film - Limo",             "category": "tint",      "stock": 7,  "minStock": 3,  "unitCost": 55,   "supplier": "Llumar"},
+        {"name": "Cat-Back Exhaust Kit (Universal)",    "category": "exhaust",   "stock": 3,  "minStock": 3,  "unitCost": 420,  "supplier": "Akrapovic"},
+        {"name": "Titanium Exhaust Kit",                "category": "exhaust",   "stock": 1,  "minStock": 2,  "unitCost": 1100, "supplier": "Akrapovic"},
+        {"name": "Valved Exhaust System",               "category": "exhaust",   "stock": 2,  "minStock": 2,  "unitCost": 1600, "supplier": "Capristo"},
+        {"name": "Ducktail Spoiler (Universal)",        "category": "spoiler",   "stock": 5,  "minStock": 3,  "unitCost": 180,  "supplier": "Seibon"},
+        {"name": "GT Wing Kit",                         "category": "spoiler",   "stock": 2,  "minStock": 2,  "unitCost": 550,  "supplier": "APR Performance"},
+        {"name": "Swan Neck Wing",                      "category": "spoiler",   "stock": 1,  "minStock": 1,  "unitCost": 900,  "supplier": "APR Performance"},
+        {"name": "Brake Caliper Paint Kit",             "category": "paint",     "stock": 15, "minStock": 5,  "unitCost": 35,   "supplier": "G2 Caliper"},
+        {"name": "Clear Coat (per gallon)",             "category": "paint",     "stock": 6,  "minStock": 4,  "unitCost": 120,  "supplier": "PPG Industries"},
+        {"name": "Primer (per gallon)",                 "category": "paint",     "stock": 8,  "minStock": 4,  "unitCost": 85,   "supplier": "PPG Industries"},
+        {"name": "Street Aero Kit (Supra)",             "category": "bodykit",   "stock": 1,  "minStock": 1,  "unitCost": 1200, "supplier": "Varis"},
+        {"name": "Widebody Kit (Universal)",            "category": "bodykit",   "stock": 0,  "minStock": 1,  "unitCost": 2500, "supplier": "Liberty Walk"},
+        {"name": "Carbon Aero Package",                 "category": "bodykit",   "stock": 1,  "minStock": 1,  "unitCost": 4000, "supplier": "Seibon"},
+        {"name": "Vented Hood (Supra)",                 "category": "hood",      "stock": 2,  "minStock": 1,  "unitCost": 400,  "supplier": "Seibon"},
+        {"name": "Carbon Fiber Hood (Universal)",       "category": "hood",      "stock": 1,  "minStock": 1,  "unitCost": 900,  "supplier": "Seibon"},
+        {"name": "Sport Side Skirts",                   "category": "sideskirt", "stock": 4,  "minStock": 2,  "unitCost": 250,  "supplier": "Varis"},
+        {"name": "Carbon Side Skirts",                  "category": "sideskirt", "stock": 2,  "minStock": 1,  "unitCost": 550,  "supplier": "Seibon"},
     ]
 
     alerts = [
