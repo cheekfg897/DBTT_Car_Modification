@@ -5,26 +5,28 @@ Start with:
     pip install -r requirements.txt
     uvicorn main:app --reload --port 8000
 
-Endpoints from analysis.py (notebook logic, sections 4-11):
-  GET /api/projections       — historical + baseline vs digital (2020-2029)
-  GET /api/service-stats     — popular services, bundles, AOV, budget bands, style prefs
-  GET /api/recommendations   — cross-sell rules
-  GET /api/uplift-kpis       — headline business findings
+Endpoints from analysis.py (computed):
+  GET /api/projections        — historical + baseline vs digital (2020-2029)
+  GET /api/service-stats      — popular services, bundles, AOV, budget bands, style prefs
+  GET /api/recommendations    — cross-sell rules
+  GET /api/uplift-kpis        — headline business findings
+  GET /api/inventory-predictions — predictive stock alerts + reorder quantities
+  GET /api/kpis               — 4 operational KPI cards
+  GET /api/monthly-revenue    — 2025 revenue distributed seasonally
+  GET /api/service-breakdown  — revenue contribution per service
+  GET /api/service-bundles    — top service bundles (for worker PopularCombos)
 
-Endpoints from mock_data.py (ported frontend-only items):
-  GET /api/kpis              — 4 operational KPI cards
-  GET /api/monthly-revenue   — monthly revenue chart data (2025)
-  GET /api/service-breakdown — service category pie chart
-  GET /api/trend-insights    — color/finish trend insights
-  GET /api/supply-alerts     — inventory stock alerts
-  GET /api/service-bundles   — top service bundles (for worker PopularCombos)
+  GET /api/trend-insights     — H1 vs H2 2024 service demand trends
 """
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from analysis import get_projections, get_service_stats, get_recommendations, get_uplift_kpis, get_inventory_predictions
-from mock_data import get_monthly_revenue, get_kpi_stats, get_service_breakdown, get_trend_insights, get_supply_alerts
+from analysis import (
+    get_projections, get_service_stats, get_recommendations, get_uplift_kpis,
+    get_inventory_predictions, get_kpi_stats, get_monthly_revenue, get_service_breakdown,
+    get_trend_insights,
+)
 
 app = FastAPI(title="Vos Automotive Analytics API")
 
@@ -87,11 +89,6 @@ def service_breakdown():
 @app.get("/api/trend-insights")
 def trend_insights():
     return get_trend_insights()
-
-
-@app.get("/api/supply-alerts")
-def supply_alerts():
-    return get_supply_alerts()
 
 
 @app.get("/api/service-bundles")

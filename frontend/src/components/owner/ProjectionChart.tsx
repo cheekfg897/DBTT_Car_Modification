@@ -7,9 +7,10 @@ import {
 interface HistoricalPoint { year: number; customers: number; revenue: number; aov: number; serviceMix: string }
 interface ProjectionPoint { year: number; customers: number; revenue: number }
 interface ProjectionData {
-  historical: HistoricalPoint[];
-  baseline:   ProjectionPoint[];
-  digital:    ProjectionPoint[];
+  historical:        HistoricalPoint[];
+  baseline:          ProjectionPoint[];
+  digital:           ProjectionPoint[];
+  baselineGrowthRate: number;
 }
 
 export function ProjectionChart() {
@@ -91,7 +92,7 @@ export function ProjectionChart() {
               strokeWidth={2}
               strokeDasharray="5 3"
               dot={{ r: 3, fill: '#3b82f6' }}
-              name="Baseline (6% growth)"
+              name={`Baseline (${Math.round((data.baselineGrowthRate ?? 0) * 100)}% growth)`}
               connectNulls={false}
             />
             <Line

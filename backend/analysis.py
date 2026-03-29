@@ -3,6 +3,8 @@ analysis.py — Notebook logic (analysis.ipynb sections 4–11) as callable func
 All data is synthetic/extrapolated for academic analysis.
 """
 
+import datetime
+
 import numpy as np
 import pandas as pd
 
@@ -109,6 +111,7 @@ def get_projections() -> dict:
         "comparison":          comparison,
         "totalCustomerUplift": total_customer_uplift,
         "totalRevenueUplift":  total_revenue_uplift,
+        "baselineGrowthRate":  baseline_growth,
     }
 
 
@@ -175,14 +178,18 @@ def _generate_transactions() -> pd.DataFrame:
         else:
             band = "Premium (> SGD 3,200)"
 
+        day_offset = int(rng.integers(0, 365))
+        order_date = datetime.date(2024, 1, 1) + datetime.timedelta(days=day_offset)
+
         rows.append({
-            "customer_id":      f"C{cid:03d}",
-            "car_segment":      segment,
-            "primary_service":  primary,
+            "customer_id":       f"C{cid:03d}",
+            "car_segment":       segment,
+            "primary_service":   primary,
             "secondary_service": secondary,
-            "order_value":      order_val,
-            "budget_band":      band,
-            "style_preference": style,
+            "order_value":       order_val,
+            "budget_band":       band,
+            "style_preference":  style,
+            "date":              order_date.isoformat(),
         })
 
     return pd.DataFrame(rows)
@@ -439,3 +446,121 @@ def get_inventory_predictions() -> list[dict]:
     # Sort: critical first, then warning, then healthy; within each group by days asc
     urgency_order = {"critical": 0, "warning": 1, "healthy": 2}
     return sorted(results, key=lambda r: (urgency_order[r["urgency"]], r["daysUntilStockout"]))
+
+
+# ---------------------------------------------------------------------------
+# Section 13 — Operational KPIs (derived from projections + transactions)
+# ---------------------------------------------------------------------------
+
+def get_kpi_stats() -> dict:
+    """
+    Four operational KPI cards derived from projection and transaction analytics.
+    - Total Revenue    = 2025 digital projection
+    - Orders/month     = 2025 digital customers ÷ 12
+    - Avg Order Value  = mean order value across all 320 transactions
+    - Top Service      = highest-mention service from transaction analytics
+    """
+    proj  = get_projections()
+    stats = get_service_stats()
+    df    = _get_transactions()
+
+    annual_revenue   = proj["digital"][0]["revenue"]
+    annual_customers = proj["digital"][0]["customers"]
+    orders_per_month = _round_half_up(annual_customers / 12)
+    avg_order_value  = int(df["order_value"].mean().round(0))
+    top_service      = stats["popularServices"][0]["service"] if stats["popularServices"] else "N/A"
+
+    return {
+        "totalRevenue":    annual_revenue,
+        "ordersThisMonth": orders_per_month,
+        "avgOrderValue":   avg_order_value,
+        "topService":      top_service,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Section 14 — Monthly revenue (2025 digital projection distributed seasonally)
+# ---------------------------------------------------------------------------
+
+# Seasonal weights — sum to exactly 1.0
+_SEASONAL_WEIGHTS = [0.068, 0.073, 0.076, 0.083, 0.088, 0.085,
+                     0.080, 0.085, 0.087, 0.090, 0.094, 0.091]
+_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def get_monthly_revenue() -> list[dict]:
+    """
+    Distributes the 2025 digital projection annual revenue across 12 months
+    using a seasonal weighting pattern. Final month absorbs rounding remainder.
+    """
+    annual = get_projections()["digital"][0]["revenue"]
+    result = []
+    total  = 0
+    for i, (month, w) in enumerate(zip(_MONTHS, _SEASONAL_WEIGHTS)):
+        if i < 11:
+            rev    = _round_half_up(annual * w)
+            total += rev
+        else:
+            rev = annual - total  # last month absorbs rounding difference
+        result.append({"month": month, "revenue": rev})
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Section 15 — Service revenue breakdown (computed from transaction analytics)
+# ---------------------------------------------------------------------------
+
+def get_service_breakdown() -> list[dict]:
+    """
+    Revenue contribution per service: primary customer count × avg order value.
+    Derived entirely from the synthetic transaction dataset.
+    """
+    df      = _get_transactions()
+    stats   = get_service_stats()
+    aov_map = {item["service"]: item["avgOrderValue"] for item in stats["aovByService"]}
+    counts  = df["primary_service"].value_counts().to_dict()
+
+    result = [
+        {"name": svc, "value": count * aov_map.get(svc, 0)}
+        for svc, count in counts.items()
+    ]
+    return sorted(result, key=lambda x: -x["value"])
+
+
+# ---------------------------------------------------------------------------
+# Section 16 — Trend insights (H1 vs H2 2024 demand per service)
+# ---------------------------------------------------------------------------
+
+def get_trend_insights() -> list[dict]:
+    """
+    Compares H1 (Jan–Jun) vs H2 (Jul–Dec) 2024 primary service demand.
+    Trend direction and magnitude are fully derived from the synthetic transactions.
+    """
+    df = _get_transactions()
+    df = df.copy()
+    df["month"] = pd.to_datetime(df["date"]).dt.month
+
+    h1 = df[df["month"] <= 6]
+    h2 = df[df["month"] > 6]
+
+    insights = []
+    for svc in df["primary_service"].unique():
+        h1_count = int((h1["primary_service"] == svc).sum())
+        h2_count = int((h2["primary_service"] == svc).sum())
+
+        if h1_count > 0:
+            change = round(((h2_count - h1_count) / h1_count) * 100)
+        else:
+            change = 100 if h2_count > 0 else 0
+
+        direction = "up" if change >= 0 else "down"
+        verb      = "up" if change >= 0 else "down"
+        insights.append({
+            "title":       f"{svc} {'Rising' if change >= 0 else 'Cooling Off'}",
+            "description": f"{svc} orders {verb} {abs(change)}% in H2 vs H1 2024",
+            "change":      change,
+            "type":        direction,
+        })
+
+    return sorted(insights, key=lambda x: -abs(x["change"]))[:6]
